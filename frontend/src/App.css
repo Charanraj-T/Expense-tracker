@@ -4,6 +4,22 @@
   box-sizing: border-box;
 }
 
-body{
-  font-family: 'Roboto', sans-serif;
+@keyframes gradient {
+  0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  height:100vh;
+  background-image: linear-gradient(to right bottom, #f64f59, #fc4975, #fb4991, #f450af, #e55dcb, #d063d7, #b96ae0, #9e70e7, #816fe0, #636cd7, #4369cc, #1565c0);
+  background-size: 200% 200%;
+  animation: gradient 5s  ease infinite;
 }

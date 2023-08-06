@@ -1,0 +1,21 @@
+.layoutContainer {
+  display: flex;
+  gap: 2%;
+  padding: 2rem;
+  height: 100vh;
+}
+
+.layoutContainer > div {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  border: 5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.layoutContainer div:first-child {
+  width: 20%;
+}
+
+.layoutContainer div:last-child {
+  width: 78%;
+}
