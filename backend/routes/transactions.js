@@ -5,11 +5,12 @@ const {
   updateTransaction,
   deleteTransaction,
 } = require("../controllers/transactions");
+const { verifyToken } = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/", getTransactions);
-router.post("/", addTransaction);
-router.patch("/:id",updateTransaction);
-router.delete("/:id", deleteTransaction);
+router.get("/", verifyToken, getTransactions);
+router.post("/", verifyToken, addTransaction);
+router.patch("/:id", verifyToken, updateTransaction);
+router.delete("/:id", verifyToken, deleteTransaction);
 
 module.exports = router;

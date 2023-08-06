@@ -1,4 +1,3 @@
-const { json } = require("express");
 const transaction = require("../models/transaction");
 
 const addTransaction = async (req, res) => {
