@@ -1,61 +1,49 @@
-const user = require("../models/user");
+const User = require("../models/user");
 const { hashPassword, comparePassword } = require("../utils/login");
 const { createToken } = require("../middleware/auth");
+const { HttpError } = require("../utils/httpError");
 
 const registerUser = async (req, res) => {
-  const { email, username, password } = req.body || {};
-  try {
-    if (!email || !username || !password) {
-      return res.status(400).json({ message: "All fields are required!" });
-    } else {
-      const userDetail = await user.findOne({ email: email });
-      if (userDetail) {
-        res.status(403).json({ message: "User already exists" });
-      } else {
-        const newUser = user({
-          username: username,
-          email: email,
-          password: await hashPassword(password),
-        });
-        await newUser.save();
-        res.status(201).json({ message: "User registered successfully!" });
-      }
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  const { username, email, password } = req.body || {};
+
+  if (!username || !email || !password) {
+    throw new HttpError(400, "All fields are required!");
   }
+
+  const existing = await User.findOne({ email: email.toLowerCase() });
+  if (existing) {
+    throw new HttpError(409, "User already exists");
+  }
+
+  const user = await User.create({
+    username,
+    email,
+    password: await hashPassword(password),
+  });
+
+  res.status(201).json({ message: "User registered successfully!" });
 };
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body || {};
-  try {
-    if (!email || !password) {
-      return res.status(400).json({ message: "All fields are required!" });
-    } else {
-      const userDetail = await user.findOne({ email: email });
-      if (userDetail) {
-        const isUserValid = await comparePassword(
-          password,
-          userDetail.password
-        );
-        if (isUserValid) {
-          res.status(200).json({
-            username: userDetail.username,
-            token: createToken({
-              username: userDetail.username,
-              email: userDetail.email,
-            }),
-          });
-        } else {
-          res.status(401).json({ message: "Invalid password" });
-        }
-      } else {
-        res.status(401).json({ message: "Invalid user!" });
-      }
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+
+  if (!email || !password) {
+    throw new HttpError(400, "All fields are required!");
   }
+
+  const user = await User.findOne({ email: email.toLowerCase() });
+  if (!user) {
+    throw new HttpError(401, "Invalid credentials");
+  }
+
+  const isValid = await comparePassword(password, user.password);
+  if (!isValid) {
+    throw new HttpError(401, "Invalid credentials");
+  }
+
+  const token = createToken({ userId: user._id, email: user.email });
+
+  res.status(200).json({ username: user.username, userId: user._id, token });
 };
 
 module.exports = { registerUser, loginUser };

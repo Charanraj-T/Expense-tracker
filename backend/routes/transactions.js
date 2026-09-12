@@ -2,15 +2,20 @@ const express = require("express");
 const {
   addTransaction,
   getTransactions,
+  getTransactionSummary,
   updateTransaction,
   deleteTransaction,
 } = require("../controllers/transactions");
 const { verifyToken } = require("../middleware/auth");
+
 const router = express.Router();
 
-router.get("/", verifyToken, getTransactions);
-router.post("/", verifyToken, addTransaction);
-router.patch("/:id", verifyToken, updateTransaction);
-router.delete("/:id", verifyToken, deleteTransaction);
+router.use(verifyToken);
+
+router.get("/summary", getTransactionSummary);
+router.get("/", getTransactions);
+router.post("/", addTransaction);
+router.patch("/:id", updateTransaction);
+router.delete("/:id", deleteTransaction);
 
 module.exports = router;
