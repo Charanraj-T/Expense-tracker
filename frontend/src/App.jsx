@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import Layout from "./pages/layout/Layout";
@@ -7,8 +8,20 @@ import Analytics from "./pages/analytics/Analytics";
 import Account from "./pages/account/Account";
 import AuthPage from "./pages/auth/AuthPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import { useAuthStore } from "./store/authStore";
 
 function App() {
+  const initialized = useAuthStore((state) => state.initialized);
+  const bootstrap = useAuthStore((state) => state.bootstrap);
+
+  useEffect(() => {
+    bootstrap();
+  }, [bootstrap]);
+
+  if (!initialized) {
+    return null;
+  }
+
   return (
     <BrowserRouter>
       <Routes>

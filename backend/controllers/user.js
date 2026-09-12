@@ -74,11 +74,11 @@ const loginUser = async (req, res) => {
   }
 
   const accessToken = createToken({ userId: user._id, email: user.email });
-  const { token } = await issueRefreshSession(
+  const { token: refreshToken } = await issueRefreshSession(
     user._id,
     req.get("user-agent") || "",
   );
-  setRefreshCookie(res, token);
+  setRefreshCookie(res, refreshToken);
 
   res
     .status(200)

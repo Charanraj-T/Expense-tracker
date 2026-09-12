@@ -9,8 +9,8 @@ const hashRefreshToken = (token) => {
 
 const getCookieOptions = () => ({
   httpOnly: true,
-  sameSite: "lax",
-  secure: process.env.COOKIE_SECURE === "true",
+  secure: true,
+  sameSite: "none",
 });
 
 const setRefreshCookie = (res, token) => {

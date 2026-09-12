@@ -1,5 +1,11 @@
 import axios from "axios";
-import { getToken, setToken, removeToken, removeUser, setUser } from "../utils/token";
+import {
+  getToken,
+  setToken,
+  removeToken,
+  removeUser,
+  setUser,
+} from "../utils/token";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -16,7 +22,7 @@ const signOut = () => {
   }
 };
 
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
   if (!refreshPromise) {
     refreshPromise = api
       .post("/auth/refresh")

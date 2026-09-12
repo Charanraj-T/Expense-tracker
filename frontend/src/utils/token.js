@@ -1,16 +1,15 @@
-const TOKEN_KEY = "expense-tracker-token";
 const USER_KEY = "expense-tracker-user";
 
-export const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
-};
+let accessToken = null;
+
+export const getToken = () => accessToken;
 
 export const setToken = (token) => {
-  localStorage.setItem(TOKEN_KEY, token);
+  accessToken = token;
 };
 
 export const removeToken = () => {
-  localStorage.removeItem(TOKEN_KEY);
+  accessToken = null;
 };
 
 export const getUser = () => {

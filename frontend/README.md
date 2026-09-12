@@ -48,6 +48,8 @@ src/
 
 ## Sessions
 
-- Logging in stores the access token in localStorage and receives the refresh token as an HttpOnly cookie.
-- `api/axios.js` attaches the access token as a bearer header and, on a 401, performs a single-flight `POST /auth/refresh` before retrying the request once. If refresh fails, it clears state and redirects to `/login`.
-- Logout calls `POST /auth/logout` to revoke the server-side session and clears local state.
+- The refresh token is stored by the browser in an `HttpOnly` cookie (set by the API) and is never exposed to JavaScript.
+- The access token lives **only in memory** — never in `localStorage` — so an XSS script has no long-lived secret to steal.
+- On page load, if a previous user is recorded, the app silently calls `POST /auth/refresh` and restores the session; if that fails it clears state and shows `/login`.
+- `api/axios.js` attaches the in-memory access token as a bearer header and, on a 401, performs a single-flight `POST /auth/refresh` (the browser sends the cookie automatically) before retrying once. If refresh fails, it clears state and redirects to `/login`.
+- Logout calls `POST /auth/logout` to revoke the session, clear the cookie, and wipe in-memory state.

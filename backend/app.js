@@ -14,6 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+  res.json({ name: "ClearSpend API", status: "ok" });
+});
+
 app.use("/auth", userRoutes);
 app.use("/transactions", transactionRoutes);
 
