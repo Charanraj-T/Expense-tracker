@@ -10,7 +10,7 @@ const escapeCsv = (value) => {
 };
 
 const parseTransactionInput = (body) => {
-  const { amount, type, category, date, note } = body || {};
+  const { amount, type, title, category, date, note } = body || {};
 
   const parsedAmount = Number(amount);
   if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
@@ -22,6 +22,14 @@ const parseTransactionInput = (body) => {
       400,
       "Type must be one of: income, expense, investment",
     );
+  }
+
+  const parsedTitle = title ? String(title).trim() : "";
+  if (!parsedTitle) {
+    throw new HttpError(400, "Title is required!");
+  }
+  if (parsedTitle.length > 60) {
+    throw new HttpError(400, "Title must be at most 60 characters!");
   }
 
   if (!category || !category.trim()) {
@@ -36,6 +44,7 @@ const parseTransactionInput = (body) => {
   return {
     amount: parsedAmount,
     type,
+    title: parsedTitle,
     category: category.trim().toLowerCase(),
     date: parsedDate,
     note: note ? String(note).trim() : undefined,
@@ -80,6 +89,9 @@ const buildFilter = ({ userId, type, month, startDate, endDate, search }) => {
       throw new HttpError(400, "Month must be in YYYY-MM format");
     }
     const [year, monthIndex] = month.split("-").map(Number);
+    if (monthIndex < 1 || monthIndex > 12) {
+      throw new HttpError(400, "Month must be a valid month (01-12)");
+    }
     filter.date = {
       $gte: new Date(Date.UTC(year, monthIndex - 1, 1)),
       $lt: new Date(Date.UTC(year, monthIndex, 1)),
@@ -89,6 +101,7 @@ const buildFilter = ({ userId, type, month, startDate, endDate, search }) => {
   if (search && search.trim()) {
     const s = search.trim();
     filter.$or = [
+      { title: { $regex: s, $options: "i" } },
       { category: { $regex: s, $options: "i" } },
       { note: { $regex: s, $options: "i" } },
     ];
@@ -221,11 +234,12 @@ const exportTransactionsCsv = async (req, res) => {
 
   const transactions = await Transaction.find(filter).sort({ date: -1 });
 
-  const headers = ["Date", "Type", "Category", "Amount", "Note"];
+  const headers = ["Date", "Type", "Title", "Category", "Amount", "Note"];
   const lines = transactions.map((t) =>
     [
       t.date ? t.date.toISOString().slice(0, 10) : "",
       t.type,
+      escapeCsv(t.title),
       escapeCsv(t.category),
       t.amount,
       escapeCsv(t.note),

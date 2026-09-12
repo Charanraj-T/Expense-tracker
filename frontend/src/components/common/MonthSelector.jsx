@@ -1,4 +1,4 @@
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useTransactionStore } from "../../store/transactionStore";
 import {
   getCustomMonthRange,
@@ -10,41 +10,29 @@ const MonthSelector = ({ showCycleBadge = true, className = "" }) => {
   const {
     currentMonth,
     datePreference,
-    nextMonth,
-    prevMonth,
+    setMonth,
     resetToCurrentMonth,
   } = useTransactionStore();
 
   const range = getCustomMonthRange(currentMonth, datePreference);
   const isCurrent = currentMonth === getCurrentMonthString();
 
+  const handleMonthChange = (e) => {
+    if (e.target.value) setMonth(e.target.value);
+  };
+
   return (
     <div className={`${styles.wrapper} ${className}`}>
       <div className={styles.monthPill}>
-        <button
-          type="button"
-          className={styles.navBtn}
-          onClick={prevMonth}
-          title="Previous Month"
-          aria-label="Previous Month"
-        >
-          <ChevronLeft size={16} />
-        </button>
-
-        <span className={styles.titleLabel}>
-          <Calendar size={15} className={styles.calendarIcon} />
-          <span>{range.monthName}</span>
-        </span>
-
-        <button
-          type="button"
-          className={styles.navBtn}
-          onClick={nextMonth}
-          title="Next Month"
-          aria-label="Next Month"
-        >
-          <ChevronRight size={16} />
-        </button>
+        <Calendar size={15} className={styles.calendarIcon} />
+        <input
+          type="month"
+          className={styles.monthInput}
+          value={currentMonth}
+          onChange={handleMonthChange}
+          title="Select Month"
+          aria-label="Select Month"
+        />
       </div>
 
       {showCycleBadge && (

@@ -1,4 +1,11 @@
 import { useMemo } from "react";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+} from "recharts";
 import { formatCurrency } from "../../utils/dateRange";
 import styles from "./Charts.module.css";
 
@@ -58,11 +65,6 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
     );
   }
 
-  // SVG Donut geometry
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  let accumulatedOffset = 0;
-
   return (
     <div className={styles.chartCard}>
       <div className={styles.chartHeader}>
@@ -76,35 +78,35 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
       <div className={styles.chartBody}>
         <div className={styles.pieContainer}>
           <div className={styles.svgWrapper}>
-            <svg viewBox="0 0 100 100" className={styles.pieSvg} width="100%" height="100%">
-              <circle
-                cx="50"
-                cy="50"
-                r={radius}
-                fill="transparent"
-                stroke="var(--color-surface-dim)"
-                strokeWidth="15"
-              />
-              {categoryData.map((item) => {
-                const strokeLength = (item.percentage / 100) * circumference;
-                const offset = accumulatedOffset;
-                accumulatedOffset += strokeLength;
-
-                return (
-                  <circle
-                    key={item.name}
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    fill="transparent"
-                    stroke={item.color}
-                    strokeWidth="15"
-                    strokeDasharray={`${strokeLength} ${circumference - strokeLength}`}
-                    strokeDashoffset={-offset}
-                  />
-                );
-              })}
-            </svg>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius="52%"
+                  outerRadius="80%"
+                  paddingAngle={2}
+                  stroke="none"
+                >
+                  {categoryData.map((item) => (
+                    <Cell key={item.name} fill={item.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name) => [
+                    formatCurrency(Number(value), currency),
+                    name,
+                  ]}
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid #e2e8f0",
+                    fontSize: 13,
+                    boxShadow: "0 10px 15px -3px rgba(15, 23, 42, 0.06)",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
             <div className={styles.donutCenter}>
               <div className={styles.donutCenterLabel}>TOTAL OUT</div>
               <div className={styles.donutCenterValue}>

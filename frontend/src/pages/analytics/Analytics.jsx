@@ -128,7 +128,12 @@ const Analytics = () => {
       {/* Visual Analytics Grid */}
       <div className={styles.chartsGrid}>
         <CategoryPieChart transactions={dataForCharts} currency={currency} />
-        <TrendLineChart transactions={dataForCharts} currency={currency} />
+        <TrendLineChart
+          transactions={dataForCharts}
+          currency={currency}
+          startDate={range.startDateStr}
+          endDate={range.endDateStr}
+        />
       </div>
     </div>
   );

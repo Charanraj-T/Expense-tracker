@@ -230,101 +230,7 @@
   color: var(--color-text-main);
 }
 
-/* Category Section */
-.categorySection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.categoryHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sectionLabel {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  color: var(--color-text-main);
-  text-transform: capitalize;
-}
-
-.selectedCatLabel {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  color: var(--color-primary);
-  text-transform: capitalize;
-}
-
-.chipList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.categoryChip {
-  background: var(--color-surface-dim);
-  border: 1px solid transparent;
-  color: var(--color-text-main);
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: capitalize;
-  transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.categoryChip:hover {
-  background: var(--color-surface-container);
-}
-
-.chipSelected {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-}
-
-.moreChip {
-  background: transparent;
-  border: 1px dashed var(--color-outline-variant, #c7c4d7);
-  color: var(--color-text-muted);
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.moreChip:hover {
-  background: var(--color-surface-dim);
-  color: var(--color-text-main);
-  border-color: var(--color-primary);
-}
-
-.customCategoryInput {
-  margin-top: 0.35rem;
-  width: 100%;
-  padding: 0.6rem 0.9rem;
-  background: var(--color-surface-dim);
-  border: 1px solid transparent;
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-main);
-  outline: none;
-  transition: all 0.15s ease;
-}
-
-.customCategoryInput:focus {
-  background: var(--color-surface);
-  border-color: var(--color-primary);
-}
-
-/* Date & Note Inputs */
+/* Date, Title, Category & Note Inputs */
 .inputFieldWrapper {
   display: flex;
   align-items: center;
@@ -354,6 +260,18 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-main);
   outline: none;
+}
+
+.selectField {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-main);
+  outline: none;
+  cursor: pointer;
+  text-transform: capitalize;
+  padding: 0;
 }
 
 /* Primary Submit Button */

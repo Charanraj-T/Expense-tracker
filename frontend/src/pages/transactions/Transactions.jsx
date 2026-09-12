@@ -117,7 +117,7 @@ const Transactions = () => {
           <Search size={15} className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Search category or note..."
+            placeholder="Search title, category or note..."
             className={styles.searchInput}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}

@@ -1,41 +1,14 @@
 import {
-  Utensils,
-  ShoppingCart,
-  Home,
-  Zap,
-  Car,
-  ShoppingBag,
-  Film,
   Banknote,
-  Briefcase,
   TrendingUp,
   CreditCard,
   Pencil,
   Trash2,
 } from "lucide-react";
 import { formatCurrency, formatDate, isEndOfMonth } from "../../utils/dateRange";
+import { getCategoryByName } from "../../config/categories";
 import CategoryPill from "./CategoryPill";
 import styles from "./TransactionItem.module.css";
-
-const CATEGORY_ICONS = {
-  food: Utensils,
-  dining: Utensils,
-  groceries: ShoppingCart,
-  rent: Home,
-  housing: Home,
-  utilities: Zap,
-  bills: Zap,
-  travel: Car,
-  transit: Car,
-  transport: Car,
-  shopping: ShoppingBag,
-  entertainment: Film,
-  salary: Banknote,
-  income: Banknote,
-  freelance: Briefcase,
-  investment: TrendingUp,
-  sip: TrendingUp,
-};
 
 const TransactionItem = ({
   transaction,
@@ -50,9 +23,9 @@ const TransactionItem = ({
   const isInc = transaction.type === "income";
   const eom = isMonthEnd !== undefined ? isMonthEnd : isEndOfMonth(transaction.date);
 
-  const catKey = (transaction.category || "").toLowerCase();
+  const categoryDef = getCategoryByName(transaction.category);
   const IconComponent =
-    CATEGORY_ICONS[catKey] ||
+    categoryDef?.icon ||
     (isInc ? Banknote : transaction.type === "investment" ? TrendingUp : CreditCard);
 
   const iconCircleClass = isInc
@@ -75,12 +48,14 @@ const TransactionItem = ({
         </div>
         <div className={styles.detailsGroup}>
           <div className={styles.titleRow}>
-            <span className={styles.title}>{transaction.category}</span>
+            <span className={styles.title}>
+              {transaction.title || transaction.category}
+            </span>
             {eom && <span className={styles.eomBadge}>Month-End</span>}
           </div>
           <div className={styles.metaRow}>
             <CategoryPill
-              label={transaction.type}
+              label={transaction.category || transaction.type}
               variant={transaction.type}
             />
             <span className={styles.dotSeparator}>•</span>

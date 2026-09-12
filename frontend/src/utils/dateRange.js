@@ -111,34 +111,6 @@ export const getCustomMonthRange = (monthStr, preference = "last-day") => {
 };
 
 /**
- * Returns previous YYYY-MM
- */
-export const getPreviousMonth = (monthStr) => {
-  const [yearStr, monthIndexStr] = monthStr.split("-");
-  let year = parseInt(yearStr, 10);
-  let month = parseInt(monthIndexStr, 10) - 1;
-  if (month < 1) {
-    month = 12;
-    year -= 1;
-  }
-  return `${year}-${String(month).padStart(2, "0")}`;
-};
-
-/**
- * Returns next YYYY-MM
- */
-export const getNextMonth = (monthStr) => {
-  const [yearStr, monthIndexStr] = monthStr.split("-");
-  let year = parseInt(yearStr, 10);
-  let month = parseInt(monthIndexStr, 10) + 1;
-  if (month > 12) {
-    month = 1;
-    year += 1;
-  }
-  return `${year}-${String(month).padStart(2, "0")}`;
-};
-
-/**
  * Checks if a date falls near the end of the month (last 4 days: 27th to 31st)
  */
 export const isEndOfMonth = (dateValue) => {

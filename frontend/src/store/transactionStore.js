@@ -1,10 +1,5 @@
 import { create } from "zustand";
-import {
-  getCurrentMonthString,
-  getPreviousMonth,
-  getNextMonth,
-  getCustomMonthRange,
-} from "../utils/dateRange";
+import { getCurrentMonthString, getCustomMonthRange } from "../utils/dateRange";
 import {
   getTransactions,
   getTransactionSummary,
@@ -12,17 +7,6 @@ import {
   deleteTransaction as deleteTransactionApi,
   updateTransaction as updateTransactionApi,
 } from "../services/transactionService";
-
-const DEFAULT_CATEGORIES = [
-  "food",
-  "rent",
-  "groceries",
-  "salary",
-  "utilities",
-  "investment",
-  "entertainment",
-  "transport",
-];
 
 const getStoredPreference = (key, defaultValue) => {
   try {
@@ -40,24 +24,10 @@ const setStoredPreference = (key, value) => {
   }
 };
 
-const getStoredRecentCategories = () => {
-  try {
-    const raw = localStorage.getItem("recent_categories");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {
-    // fallback
-  }
-  return DEFAULT_CATEGORIES;
-};
-
 export const useTransactionStore = create((set, get) => ({
   currentMonth: getCurrentMonthString(),
   datePreference: getStoredPreference("date_preference", "last-day"),
   currency: getStoredPreference("currency", "₹"),
-  recentCategories: getStoredRecentCategories(),
 
   // Data
   summary: { income: 0, expense: 0, investment: 0 },
@@ -92,16 +62,6 @@ export const useTransactionStore = create((set, get) => ({
       pagination: { ...get().pagination, page: 1 },
     });
     get().refreshAllData();
-  },
-
-  nextMonth: () => {
-    const next = getNextMonth(get().currentMonth);
-    get().setMonth(next);
-  },
-
-  prevMonth: () => {
-    const prev = getPreviousMonth(get().currentMonth);
-    get().setMonth(prev);
   },
 
   resetToCurrentMonth: () => {
@@ -202,17 +162,7 @@ export const useTransactionStore = create((set, get) => ({
 
   addTransaction: async (payload) => {
     const res = await createTransaction(payload);
-
-    if (payload.category) {
-      const cat = payload.category.trim().toLowerCase();
-      const currentList = get().recentCategories.filter((c) => c !== cat);
-      const updatedList = [cat, ...currentList].slice(0, 10);
-      set({ recentCategories: updatedList });
-      setStoredPreference("recent_categories", JSON.stringify(updatedList));
-    }
-
     await get().refreshAllData();
-
     return res;
   },
 

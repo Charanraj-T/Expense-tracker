@@ -1,66 +1,107 @@
 import { useMemo } from "react";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceLine,
+} from "recharts";
 import { formatCurrency } from "../../utils/dateRange";
 import styles from "./Charts.module.css";
 
-const TrendLineChart = ({ transactions = [], currency = "₹" }) => {
-  const { points, dayPoints, avgDaily } = useMemo(() => {
+const MONTHS_SHORT = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const parseDate = (s) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+};
+
+const dateKey = (dt) =>
+  `${dt.getUTCFullYear()}-${dt.getUTCMonth()}-${dt.getUTCDate()}`;
+
+const formatWeekLabel = (start, end) => {
+  const sameMonth = start.getUTCMonth() === end.getUTCMonth();
+  const sm = MONTHS_SHORT[start.getUTCMonth()];
+  const em = MONTHS_SHORT[end.getUTCMonth()];
+  return sameMonth
+    ? `${sm} ${start.getUTCDate()}-${end.getUTCDate()}`
+    : `${sm} ${start.getUTCDate()}-${em} ${end.getUTCDate()}`;
+};
+
+const TrendLineChart = ({ transactions = [], currency = "₹", startDate, endDate }) => {
+  const { weeks, totalSpend, avgSpend } = useMemo(() => {
     const expenseTxs = transactions.filter((t) => t.type === "expense");
-    const dailyMap = {};
-    let total = 0;
+    const daily = new Map();
+    let min = null;
+    let max = null;
 
     expenseTxs.forEach((t) => {
-      if (!t.date) return;
-      const d = new Date(t.date);
-      const day = d.getUTCDate();
-      const amt = Number(t.amount) || 0;
-      dailyMap[day] = (dailyMap[day] || 0) + amt;
-      total += amt;
+      const dt = new Date(t.date);
+      const k = dateKey(dt);
+      daily.set(k, (daily.get(k) || 0) + (Number(t.amount) || 0));
+      if (!min || dt < min) min = dt;
+      if (!max || dt > max) max = dt;
     });
 
-    const days = Object.keys(dailyMap)
-      .map(Number)
-      .sort((a, b) => a - b);
+    if (!expenseTxs.length) return { weeks: [], totalSpend: 0, avgSpend: 0 };
 
-    if (days.length === 0) {
-      return { points: "", dayPoints: [], avgDaily: 0 };
+    const startRaw = parseDate(startDate);
+    const endRaw = parseDate(endDate);
+    const start = startRaw || new Date(min);
+    const end = endRaw || new Date(max);
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(0, 0, 0, 0);
+
+    const days = [];
+    const cursor = new Date(start);
+    while (cursor <= end) {
+      days.push(new Date(cursor));
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
     }
 
-    const max = Math.max(...Object.values(dailyMap), 100);
-    const avg = days.length > 0 ? Math.round(total / days.length) : 0;
+    const weeks = [];
+    let total = 0;
+    for (let i = 0; i < days.length; i += 7) {
+      const chunk = days.slice(i, i + 7);
+      const sum = chunk.reduce(
+        (acc, dt) => acc + (daily.get(dateKey(dt)) || 0),
+        0,
+      );
+      total += sum;
+      weeks.push({
+        name: formatWeekLabel(chunk[0], chunk[chunk.length - 1]),
+        spending: Math.round(sum * 100) / 100,
+      });
+    }
 
-    // SVG coordinates within 300x120 viewport
-    const width = 300;
-    const height = 120;
-    const paddingX = 20;
-    const paddingY = 15;
+    const avg = weeks.length ? Math.round((total / weeks.length) * 100) / 100 : 0;
+    return { weeks, totalSpend: total, avgSpend: avg };
+  }, [transactions, startDate, endDate]);
 
-    const minDay = Math.min(...days);
-    const maxDay = Math.max(...days);
-    const daySpan = maxDay === minDay ? 1 : maxDay - minDay;
-
-    const computed = days.map((day) => {
-      const amt = dailyMap[day];
-      const x = paddingX + ((day - minDay) / daySpan) * (width - 2 * paddingX);
-      const y = height - paddingY - (amt / max) * (height - 2 * paddingY);
-      return { day, amt, x, y };
-    });
-
-    const pts = computed.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-
-    return {
-      points: pts,
-      dayPoints: computed,
-      avgDaily: avg,
-    };
-  }, [transactions]);
-
-  if (!dayPoints.length) {
+  if (!weeks.length) {
     return (
       <div className={styles.chartCard}>
         <div className={styles.chartHeader}>
           <div className={styles.headerLeft}>
             <h3 className={styles.chartTitle}>Weekly Spending Trend</h3>
-            <span className={styles.chartSub}>Daily expense trajectory</span>
+            <span className={styles.chartSub}>Expenses bucketed by week</span>
           </div>
         </div>
         <div className={styles.chartBody}>
@@ -70,54 +111,77 @@ const TrendLineChart = ({ transactions = [], currency = "₹" }) => {
     );
   }
 
-  // Area under the curve
-  const areaPoints = `${dayPoints[0].x},110 ${points} ${dayPoints[dayPoints.length - 1].x},110`;
-
   return (
     <div className={styles.chartCard}>
       <div className={styles.chartHeader}>
         <div className={styles.headerLeft}>
           <h3 className={styles.chartTitle}>Weekly Spending Trend</h3>
-          <span className={styles.chartSub}>Paced against monthly momentum</span>
+          <span className={styles.chartSub}>Expenses bucketed by week</span>
         </div>
         <span className={styles.countBadge}>
-          Daily Avg: {formatCurrency(avgDaily, currency)}
+          Avg/wk: {formatCurrency(avgSpend, currency)}
         </span>
       </div>
 
       <div className={styles.chartBody}>
-        <div className={styles.lineContainer}>
-          <svg viewBox="0 0 300 130" className={styles.lineSvg}>
-            <defs>
-              <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#4648d4" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#4648d4" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-
-            {/* Grid line */}
-            <line x1="15" y1="110" x2="285" y2="110" className={styles.gridLine} />
-            <line x1="15" y1="20" x2="285" y2="20" className={styles.gridLine} />
-
-            {/* Shaded Area */}
-            <polygon points={areaPoints} className={styles.trendArea} />
-
-            {/* Main Trend Line */}
-            <polyline points={points} className={styles.trendPath} />
-
-            {/* Data Circles */}
-            {dayPoints.map((p) => (
-              <g key={p.day}>
-                <circle cx={p.x} cy={p.y} r="4" className={styles.dataDot}>
-                  <title>{`Day ${p.day}: ${formatCurrency(p.amt, currency)}`}</title>
-                </circle>
-                <text x={p.x} y="125" textAnchor="middle" className={styles.axisText}>
-                  d{p.day}
-                </text>
-              </g>
-            ))}
-          </svg>
+        <div className={styles.barChartBox}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeks} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#f1f5f9"
+              />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: "#767586", fontSize: 12, fontWeight: 600 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: "#767586", fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={56}
+                tickFormatter={(v) =>
+                  v >= 1000 ? `${Math.round(v / 1000)}k` : String(v)
+                }
+              />
+              <Tooltip
+                formatter={(value) => [
+                  formatCurrency(Number(value), currency),
+                  "Spending",
+                ]}
+                cursor={{ fill: "#f2f3ff" }}
+                contentStyle={{
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  fontSize: 13,
+                  boxShadow: "0 10px 15px -3px rgba(15, 23, 42, 0.06)",
+                }}
+              />
+              <ReferenceLine
+                y={avgSpend}
+                stroke="#b90538"
+                strokeDasharray="4 4"
+                strokeOpacity="0.6"
+              />
+              <Bar
+                dataKey="spending"
+                fill="#4648d4"
+                radius={[6, 6, 0, 0]}
+                maxBarSize={56}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
+      </div>
+
+      <div className={styles.cardFooter}>
+        <span>Total spent this cycle</span>
+        <span className={styles.footerHighlight}>
+          {formatCurrency(totalSpend, currency)}
+        </span>
       </div>
     </div>
   );

@@ -22,10 +22,11 @@ export const exportTransactionsToCsv = (
     return;
   }
 
-  const headers = ["Date", "Type", "Category", "Amount", "Note"];
+  const headers = ["Date", "Type", "Title", "Category", "Amount", "Note"];
   const rows = transactions.map((t) => [
     t.date ? new Date(t.date).toISOString().split("T")[0] : "",
     t.type || "",
+    `"${(t.title || "").replace(/"/g, '""')}"`,
     `"${(t.category || "").replace(/"/g, '""')}"`,
     t.amount || 0,
     `"${(t.note || "").replace(/"/g, '""')}"`,

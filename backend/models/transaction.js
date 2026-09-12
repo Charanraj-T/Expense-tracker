@@ -8,6 +8,7 @@ const transactionSchema = new mongoose.Schema(
       required: true,
       enum: ["income", "expense", "investment"],
     },
+    title: { type: String, required: true, trim: true, maxLength: 60 },
     category: { type: String, required: true, trim: true, maxLength: 30 },
     date: { type: Date, required: true },
     note: { type: String, trim: true, maxLength: 100 },

@@ -7,6 +7,7 @@ import SummaryCards from "../../components/common/SummaryCards";
 import CategoryPieChart from "../../components/charts/CategoryPieChart";
 import TrendLineChart from "../../components/charts/TrendLineChart";
 import TransactionItem from "../../components/common/TransactionItem";
+import { getCustomMonthRange } from "../../utils/dateRange";
 import styles from "./Home.module.css";
 
 const Home = () => {
@@ -16,6 +17,8 @@ const Home = () => {
     transactions,
     chartTransactions,
     currency,
+    currentMonth,
+    datePreference,
     openAddModal,
     openEditModal,
   } = useTransactionStore();
@@ -26,6 +29,7 @@ const Home = () => {
 
   const recentTxs = transactions.slice(0, 4);
   const dataForCharts = chartTransactions;
+  const range = getCustomMonthRange(currentMonth, datePreference);
 
   return (
     <div className={styles.container}>
@@ -89,7 +93,12 @@ const Home = () => {
 
       {/* Bottom Row: Weekly Spending Trend */}
       <div className={styles.bottomSection}>
-        <TrendLineChart transactions={dataForCharts} currency={currency} />
+        <TrendLineChart
+          transactions={dataForCharts}
+          currency={currency}
+          startDate={range.startDateStr}
+          endDate={range.endDateStr}
+        />
       </div>
     </div>
   );
