@@ -4,6 +4,11 @@ const { HttpError } = require("../utils/httpError");
 
 const VALID_TYPES = ["income", "expense", "investment"];
 
+const escapeCsv = (value) => {
+  const s = value == null ? "" : String(value);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+
 const parseTransactionInput = (body) => {
   const { amount, type, category, date, note } = body || {};
 
@@ -13,7 +18,10 @@ const parseTransactionInput = (body) => {
   }
 
   if (!VALID_TYPES.includes(type)) {
-    throw new HttpError(400, "Type must be one of: income, expense, investment");
+    throw new HttpError(
+      400,
+      "Type must be one of: income, expense, investment",
+    );
   }
 
   if (!category || !category.trim()) {
@@ -34,17 +42,40 @@ const parseTransactionInput = (body) => {
   };
 };
 
-const buildFilter = ({ userId, type, month }) => {
+const buildFilter = ({ userId, type, month, startDate, endDate, search }) => {
   const filter = { userId: new mongoose.Types.ObjectId(userId) };
 
   if (type) {
     if (!VALID_TYPES.includes(type)) {
-      throw new HttpError(400, "Type must be one of: income, expense, investment");
+      throw new HttpError(
+        400,
+        "Type must be one of: income, expense, investment",
+      );
     }
     filter.type = type;
   }
 
-  if (month) {
+  if (startDate || endDate) {
+    filter.date = {};
+    if (startDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+        throw new HttpError(400, "startDate must be in YYYY-MM-DD format");
+      }
+      const [sYear, sMonth, sDay] = startDate.split("-").map(Number);
+      filter.date.$gte = new Date(
+        Date.UTC(sYear, sMonth - 1, sDay, 0, 0, 0, 0),
+      );
+    }
+    if (endDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+        throw new HttpError(400, "endDate must be in YYYY-MM-DD format");
+      }
+      const [eYear, eMonth, eDay] = endDate.split("-").map(Number);
+      filter.date.$lte = new Date(
+        Date.UTC(eYear, eMonth - 1, eDay, 23, 59, 59, 999),
+      );
+    }
+  } else if (month) {
     if (!/^\d{4}-\d{2}$/.test(month)) {
       throw new HttpError(400, "Month must be in YYYY-MM format");
     }
@@ -53,6 +84,14 @@ const buildFilter = ({ userId, type, month }) => {
       $gte: new Date(Date.UTC(year, monthIndex - 1, 1)),
       $lt: new Date(Date.UTC(year, monthIndex, 1)),
     };
+  }
+
+  if (search && search.trim()) {
+    const s = search.trim();
+    filter.$or = [
+      { category: { $regex: s, $options: "i" } },
+      { note: { $regex: s, $options: "i" } },
+    ];
   }
 
   return filter;
@@ -66,7 +105,9 @@ const addTransaction = async (req, res) => {
     userId: req.user.userId,
   });
 
-  res.status(201).json({ message: "Transaction added successfully!", transaction });
+  res
+    .status(201)
+    .json({ message: "Transaction added successfully!", transaction });
 };
 
 const getTransactions = async (req, res) => {
@@ -74,6 +115,9 @@ const getTransactions = async (req, res) => {
     userId: req.user.userId,
     type: req.query.type,
     month: req.query.month,
+    startDate: req.query.startDate,
+    endDate: req.query.endDate,
+    search: req.query.search,
   });
 
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -103,6 +147,8 @@ const getTransactionSummary = async (req, res) => {
     userId: req.user.userId,
     type: req.query.type,
     month: req.query.month,
+    startDate: req.query.startDate,
+    endDate: req.query.endDate,
   });
 
   const [result] = await Transaction.aggregate([
@@ -110,9 +156,15 @@ const getTransactionSummary = async (req, res) => {
     {
       $group: {
         _id: null,
-        income: { $sum: { $cond: [{ $eq: ["$type", "income"] }, "$amount", 0] } },
-        expense: { $sum: { $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0] } },
-        investment: { $sum: { $cond: [{ $eq: ["$type", "investment"] }, "$amount", 0] } },
+        income: {
+          $sum: { $cond: [{ $eq: ["$type", "income"] }, "$amount", 0] },
+        },
+        expense: {
+          $sum: { $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0] },
+        },
+        investment: {
+          $sum: { $cond: [{ $eq: ["$type", "investment"] }, "$amount", 0] },
+        },
       },
     },
   ]);
@@ -122,7 +174,6 @@ const getTransactionSummary = async (req, res) => {
     expense: result?.expense || 0,
     investment: result?.investment || 0,
   };
-  summary.balance = summary.income - summary.expense - summary.investment;
 
   res.status(200).json(summary);
 };
@@ -133,14 +184,16 @@ const updateTransaction = async (req, res) => {
   const transaction = await Transaction.findOneAndUpdate(
     { _id: req.params.id, userId: req.user.userId },
     input,
-    { new: true, runValidators: true }
+    { returnDocument: "after", runValidators: true },
   );
 
   if (!transaction) {
     throw new HttpError(404, "Transaction not found");
   }
 
-  res.status(200).json({ message: "Transaction updated successfully!", transaction });
+  res
+    .status(200)
+    .json({ message: "Transaction updated successfully!", transaction });
 };
 
 const deleteTransaction = async (req, res) => {
@@ -156,10 +209,41 @@ const deleteTransaction = async (req, res) => {
   res.status(200).json({ message: "Transaction deleted successfully" });
 };
 
+const exportTransactionsCsv = async (req, res) => {
+  const filter = buildFilter({
+    userId: req.user.userId,
+    type: req.query.type,
+    month: req.query.month,
+    startDate: req.query.startDate,
+    endDate: req.query.endDate,
+    search: req.query.search,
+  });
+
+  const transactions = await Transaction.find(filter).sort({ date: -1 });
+
+  const headers = ["Date", "Type", "Category", "Amount", "Note"];
+  const lines = transactions.map((t) =>
+    [
+      t.date ? t.date.toISOString().slice(0, 10) : "",
+      t.type,
+      escapeCsv(t.category),
+      t.amount,
+      escapeCsv(t.note),
+    ].join(","),
+  );
+
+  const csv = [headers.join(","), ...lines].join("\n");
+
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", 'attachment; filename="transactions.csv"');
+  res.send(csv);
+};
+
 module.exports = {
   addTransaction,
   getTransactions,
   getTransactionSummary,
   updateTransaction,
   deleteTransaction,
+  exportTransactionsCsv,
 };

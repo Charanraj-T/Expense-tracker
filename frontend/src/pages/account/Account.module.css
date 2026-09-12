@@ -1,0 +1,304 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  gap: var(--space-lg);
+  box-sizing: border-box;
+}
+
+.topBar {
+  margin-bottom: var(--space-xs);
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.overline {
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Card base */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  box-sizing: border-box;
+}
+
+.cardHeader {
+  margin-bottom: var(--space-md);
+}
+
+.cardTitle {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin: 0 0 0.25rem 0;
+}
+
+.cardDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* User profile */
+.profileRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(70, 72, 212, 0.2);
+  flex-shrink: 0;
+}
+
+.profileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.userName {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.userEmail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.statusBadge {
+  margin-left: auto;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-income);
+  background: var(--color-income-bg);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(0, 108, 73, 0.15);
+}
+
+/* Settings Items */
+.divider {
+  height: 1px;
+  background: var(--color-border-subtle);
+  margin: 1.25rem 0;
+}
+
+.settingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.settingItemColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settingText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.settingLabel {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.settingDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.selectInput {
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--color-text-main);
+  outline: none;
+  min-width: 220px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.selectInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Radio Group */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.15rem;
+  background: var(--color-surface-dim);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.radioLabel:hover {
+  background: var(--color-surface-container);
+  border-color: var(--color-border-subtle);
+}
+
+.radioSelected {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.radioInput {
+  accent-color: var(--color-primary);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.radioDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.radioTitle {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.radioDesc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.badgeRecommended {
+  margin-left: auto;
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-primary);
+}
+
+/* Action Rows */
+.actionRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.exportBtn,
+.logoutBtn {
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.exportBtn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  gap: 0.45rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.exportBtn:hover {
+  background: var(--color-surface-dim);
+  border-color: var(--color-border-subtle);
+}
+
+.logoutBtn {
+  background: var(--color-surface);
+  border: 1px solid #fecdd3;
+  color: var(--color-expense);
+  gap: 0.5rem;
+}
+
+.logoutBtn:hover {
+  background: var(--color-expense-bg);
+  border-color: var(--color-expense);
+}
+
+@media (max-width: 640px) {
+  .profileRow {
+    flex-wrap: wrap;
+  }
+
+  .statusBadge {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .settingItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .selectInput {
+    width: 100%;
+  }
+
+  .actionRow {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,386 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 27, 46, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScale 0.18s ease-out;
+}
+
+@keyframes modalScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 0.75rem 1.5rem;
+}
+
+.headerTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lightningIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.headerTitle {
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.closeBtn {
+  background: var(--color-surface-dim);
+  border: none;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: var(--color-surface-container);
+  color: var(--color-text-main);
+}
+
+.successFlash {
+  margin: 0 1.5rem 0.75rem 1.5rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--color-income-bg);
+  color: var(--color-income-text);
+  border: 1px solid rgba(0, 108, 73, 0.2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.errorBanner {
+  margin: 0 1.5rem 0.75rem 1.5rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--color-expense-bg);
+  color: var(--color-expense-text);
+  border: 1px solid rgba(185, 5, 56, 0.2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  gap: 1rem;
+}
+
+/* Segmented Type Toggle */
+.typeToggle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--color-surface-dim);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  gap: 4px;
+}
+
+.typeBtn {
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.25rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.activeExpense {
+  background: var(--color-surface);
+  color: var(--color-expense);
+  box-shadow: var(--shadow-sm);
+}
+
+.activeIncome {
+  background: var(--color-surface);
+  color: var(--color-income);
+  box-shadow: var(--shadow-sm);
+}
+
+.activeInvestment {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Primary Amount Input Box */
+.amountContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface-dim);
+  border: 2px solid transparent;
+  border-radius: var(--radius-xl);
+  padding: 0.75rem 1.25rem;
+  transition: all 0.15s ease;
+}
+
+.amountContainer:focus-within {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.15);
+}
+
+.amountInputGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.amountPrefix {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.amountInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  background: transparent;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.amountInput::placeholder {
+  color: var(--color-text-light);
+}
+
+.clearAmountBtn {
+  background: var(--color-surface-container);
+  border: none;
+  color: var(--color-text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clearAmountBtn:hover {
+  background: var(--color-border);
+  color: var(--color-text-main);
+}
+
+/* Category Section */
+.categorySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-transform: capitalize;
+}
+
+.selectedCatLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: capitalize;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.categoryChip {
+  background: var(--color-surface-dim);
+  border: 1px solid transparent;
+  color: var(--color-text-main);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.categoryChip:hover {
+  background: var(--color-surface-container);
+}
+
+.chipSelected {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.moreChip {
+  background: transparent;
+  border: 1px dashed var(--color-outline-variant, #c7c4d7);
+  color: var(--color-text-muted);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.moreChip:hover {
+  background: var(--color-surface-dim);
+  color: var(--color-text-main);
+  border-color: var(--color-primary);
+}
+
+.customCategoryInput {
+  margin-top: 0.35rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: var(--color-surface-dim);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-main);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.customCategoryInput:focus {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+/* Date & Note Inputs */
+.inputFieldWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--color-surface-dim);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: 0.65rem 0.9rem;
+  transition: all 0.15s ease;
+}
+
+.inputFieldWrapper:focus-within {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.1);
+}
+
+.inputIcon {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.inputField {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-main);
+  outline: none;
+}
+
+/* Primary Submit Button */
+.submitBtn {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 10px rgba(70, 72, 212, 0.25);
+  margin-top: 0.25rem;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

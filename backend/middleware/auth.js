@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
 
+const ACCESS_TOKEN_EXPIRY = "15m";
+const REFRESH_TOKEN_EXPIRY = "30d";
+
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
@@ -10,6 +13,9 @@ const verifyToken = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    if (payload.type !== "access") {
+      throw new Error("Wrong token type");
+    }
     req.user = payload;
     next();
   } catch (err) {
@@ -18,7 +24,30 @@ const verifyToken = (req, res, next) => {
 };
 
 const createToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+  return jwt.sign({ ...payload, type: "access" }, process.env.JWT_SECRET_KEY, {
+    expiresIn: ACCESS_TOKEN_EXPIRY,
+  });
 };
 
-module.exports = { verifyToken, createToken };
+const createRefreshToken = (payload) => {
+  return jwt.sign(
+    { ...payload, type: "refresh" },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: REFRESH_TOKEN_EXPIRY },
+  );
+};
+
+const verifyRefreshToken = (token) => {
+  const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  if (payload.type !== "refresh") {
+    throw new Error("Wrong token type");
+  }
+  return payload;
+};
+
+module.exports = {
+  verifyToken,
+  createToken,
+  createRefreshToken,
+  verifyRefreshToken,
+};

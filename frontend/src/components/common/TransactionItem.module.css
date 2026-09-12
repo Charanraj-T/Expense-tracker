@@ -1,0 +1,165 @@
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease-in-out;
+  gap: var(--space-md);
+}
+
+.row:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--color-outline-variant, #c7c4d7);
+}
+
+.monthEndRow {
+  border-left: 4px solid #f59e0b;
+}
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.iconCircle {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.incomeIcon {
+  background: var(--color-income-bg);
+  color: var(--color-income-text);
+}
+
+.expenseIcon {
+  background: var(--color-expense-bg);
+  color: var(--color-expense-text);
+}
+
+.investmentIcon {
+  background: var(--color-investment-bg);
+  color: var(--color-investment-text);
+}
+
+.detailsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-transform: capitalize;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  flex-wrap: wrap;
+}
+
+.dotSeparator {
+  color: var(--color-text-subtle);
+  font-size: 0.6rem;
+}
+
+.noteText {
+  color: var(--color-text-muted);
+}
+
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.amountGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.amount {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.incomeAmount {
+  color: var(--color-income);
+}
+
+.expenseAmount {
+  color: var(--color-text-main);
+}
+
+.investmentAmount {
+  color: var(--color-primary);
+}
+
+.statusLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  font-weight: 500;
+}
+
+.eomBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #b45309;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.editBtn,
+.deleteBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-light);
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.editBtn:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.deleteBtn:hover {
+  color: var(--color-expense);
+  background: var(--color-expense-bg);
+}

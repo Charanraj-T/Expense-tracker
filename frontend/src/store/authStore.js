@@ -7,7 +7,7 @@ import {
   setUser,
   removeUser,
 } from "../utils/token";
-import { login as loginRequest, register as registerRequest } from "../services/authService";
+import { login as loginRequest, register as registerRequest, logout as logoutRequest } from "../services/authService";
 
 const persistedUser = getUser();
 const persistedToken = getToken();
@@ -15,7 +15,6 @@ const persistedToken = getToken();
 export const useAuthStore = create((set) => ({
   user: persistedUser,
   token: persistedToken,
-  isAuthenticated: Boolean(persistedToken),
 
   login: async (email, password) => {
     const data = await loginRequest(email, password);
@@ -23,7 +22,7 @@ export const useAuthStore = create((set) => ({
 
     setToken(token);
     setUser(user);
-    set({ user, token, isAuthenticated: true });
+    set({ user, token });
     return data;
   },
 
@@ -32,8 +31,9 @@ export const useAuthStore = create((set) => ({
   },
 
   logout: () => {
+    logoutRequest().catch(() => {});
     removeToken();
     removeUser();
-    set({ user: null, token: null, isAuthenticated: false });
+    set({ user: null, token: null });
   },
 }));
