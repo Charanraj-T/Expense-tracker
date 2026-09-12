@@ -1,7 +1,7 @@
 const transaction = require("../models/transaction");
 
 const addTransaction = async (req, res) => {
-  const { title, amount, type, category, date, comment } = req.body;
+  const { title, amount, type, category, date, comment } = req.body || {};
   try {
     if (!title || !amount || !type || !category || !date) {
       return res.status(400).json({ message: "All fields are required!" });
@@ -34,7 +34,7 @@ const getTransactions = async (req, res) => {
 };
 
 const updateTransaction = async (req, res) => {
-  const { title, amount, type, category, date, comment } = req.body;
+  const { title, amount, type, category, date, comment } = req.body || {};
   const { id } = req.params;
   try {
     if (!title || !amount || !type || !category || !date) {

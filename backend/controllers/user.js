@@ -3,7 +3,7 @@ const { hashPassword, comparePassword } = require("../utils/login");
 const { createToken } = require("../middleware/auth");
 
 const registerUser = async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, username, password } = req.body || {};
   try {
     if (!email || !username || !password) {
       return res.status(400).json({ message: "All fields are required!" });
@@ -27,7 +27,7 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
   try {
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required!" });
