@@ -26,3 +26,10 @@ npm start
 Open http://localhost:3000 and register a user.
 
 See the backend and frontend READMEs for API details, environment variables, and scripts.
+
+## Security notes
+
+- Passwords are hashed with bcrypt; access tokens last 15 minutes and refresh tokens are rotated on every use and stored hashed server-side.
+- `JWT_SECRET_KEY` must be a long, random value. Generate one with: `node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"`. The backend warns at startup if it is missing or weak.
+- Never commit `.env` files. Only the `.env.example` files with placeholders are tracked.
+- MongoDB Atlas: restrict the cluster IP access list to your own IPs and the backend host (never `0.0.0.0/0`), and use a strong, randomly generated database user password.

@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const ACCESS_TOKEN_EXPIRY = "15m";
 const REFRESH_TOKEN_EXPIRY = "30d";
+const JWT_ALGORITHMS = ["HS256"];
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,7 +13,9 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const payload = jwt.verify(token, process.env.JWT_SECRET_KEY, {
+      algorithms: JWT_ALGORITHMS,
+    });
     if (payload.type !== "access") {
       throw new Error("Wrong token type");
     }
@@ -38,7 +41,9 @@ const createRefreshToken = (payload) => {
 };
 
 const verifyRefreshToken = (token) => {
-  const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const payload = jwt.verify(token, process.env.JWT_SECRET_KEY, {
+    algorithms: JWT_ALGORITHMS,
+  });
   if (payload.type !== "refresh") {
     throw new Error("Wrong token type");
   }

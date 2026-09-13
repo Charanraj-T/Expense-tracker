@@ -5,8 +5,9 @@ const { HttpError } = require("../utils/httpError");
 const VALID_TYPES = ["income", "expense", "investment"];
 
 const escapeCsv = (value) => {
-  const s = value == null ? "" : String(value);
-  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  const raw = value == null ? "" : String(value);
+  const safe = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
+  return /[",\n\r]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 };
 
 const parseTransactionInput = (body) => {
