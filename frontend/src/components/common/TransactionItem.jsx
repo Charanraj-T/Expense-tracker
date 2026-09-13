@@ -12,7 +12,6 @@ import styles from "./TransactionItem.module.css";
 
 const TransactionItem = ({
   transaction,
-  currency = "₹",
   onDelete,
   onEdit,
   isMonthEnd,
@@ -77,7 +76,7 @@ const TransactionItem = ({
         <div className={styles.amountGroup}>
           <div className={`${styles.amount} ${amountClass}`}>
             {isInc ? "+" : isExp ? "-" : ""}
-            {formatCurrency(transaction.amount, currency)}
+            {formatCurrency(transaction.amount)}
           </div>
           <span className={styles.statusLabel}>
             {isInc ? "Inflow" : isExp ? "Outflow" : "Asset"}

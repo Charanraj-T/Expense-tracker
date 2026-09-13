@@ -143,7 +143,7 @@ const getTransactions = async (req, res) => {
 
   const [transactions, total] = await Promise.all([
     Transaction.find(filter)
-      .sort({ date: -1, createdAt: -1 })
+      .sort({ date: -1 })
       .skip((page - 1) * limit)
       .limit(limit),
     Transaction.countDocuments(filter),
@@ -180,10 +180,7 @@ const getTodayTransactions = async (req, res) => {
     },
   };
 
-  const transactions = await Transaction.find(filter).sort({
-    date: -1,
-    createdAt: -1,
-  });
+  const transactions = await Transaction.find(filter).sort({ date: -1 });
 
   res.status(200).json({
     transactions,
@@ -286,10 +283,7 @@ const exportTransactionsCsv = async (req, res) => {
     search: req.query.search,
   });
 
-  const transactions = await Transaction.find(filter).sort({
-    date: -1,
-    createdAt: -1,
-  });
+  const transactions = await Transaction.find(filter).sort({ date: -1 });
 
   const headers = ["Date", "Type", "Title", "Category", "Amount", "Note"];
   const lines = transactions.map((t) =>

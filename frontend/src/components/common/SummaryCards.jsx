@@ -9,7 +9,7 @@ import { formatCurrency, getDailyAverage } from "../../utils/dateRange";
 import styles from "./SummaryCards.module.css";
 
 const SummaryCards = () => {
-  const { summary, currency } = useTransactionStore();
+  const { summary } = useTransactionStore();
 
   const dailyAvg = getDailyAverage(summary);
 
@@ -27,7 +27,7 @@ const SummaryCards = () => {
             </div>
           </div>
           <div className={`${styles.amount} ${styles.dailyAmount}`}>
-            {formatCurrency(dailyAvg, currency)}
+            {formatCurrency(dailyAvg)}
             <span className={styles.perDay}>/day</span>
           </div>
         </div>
@@ -46,7 +46,7 @@ const SummaryCards = () => {
           </div>
         </div>
         <div className={styles.amount}>
-          {formatCurrency(summary?.income || 0, currency)}
+          {formatCurrency(summary?.income || 0)}
         </div>
         <div className={styles.bottomRow}>
           <span className={`${styles.badge} ${styles.incomeBadge}`}>
@@ -63,7 +63,7 @@ const SummaryCards = () => {
           </div>
         </div>
         <div className={styles.amount}>
-          {formatCurrency(summary?.expense || 0, currency)}
+          {formatCurrency(summary?.expense || 0)}
         </div>
         <div className={styles.bottomRow}>
           <span className={`${styles.badge} ${styles.expenseBadge}`}>
@@ -80,7 +80,7 @@ const SummaryCards = () => {
           </div>
         </div>
         <div className={styles.amount}>
-          {formatCurrency(summary?.investment || 0, currency)}
+          {formatCurrency(summary?.investment || 0)}
         </div>
         <div className={styles.bottomRow}>
           <span className={`${styles.badge} ${styles.investmentBadge}`}>

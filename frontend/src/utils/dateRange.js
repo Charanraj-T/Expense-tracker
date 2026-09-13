@@ -43,17 +43,6 @@ export const getTodayDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
-/**
- * Calculates custom month range based on preference.
- * Default ("last-day"):
- * - Oct -> Sep 30 to Oct 30
- * - Nov -> Oct 31 to Nov 30
- * Calendar ("first-day"):
- * - Oct -> Oct 1 to Oct 31
- *
- * @param {string} monthStr - 'YYYY-MM'
- * @param {string} preference - 'last-day' | 'first-day'
- */
 export const getCustomMonthRange = (monthStr, preference = "last-day") => {
   if (!monthStr || !/^\d{4}-\d{2}$/.test(monthStr)) {
     monthStr = getCurrentMonthString();
@@ -82,15 +71,10 @@ export const getCustomMonthRange = (monthStr, preference = "last-day") => {
     };
   }
 
-  // "last-day" logic:
-  // Starts on last day of previous month:
-  // e.g. for Oct (10): Sep 30.
-  // for Nov (11): Oct 31.
   const prevMonthLastDate = new Date(year, month - 1, 0);
   const startMonthShort = MONTH_NAMES_SHORT[prevMonthLastDate.getMonth()];
   const startDay = prevMonthLastDate.getDate();
 
-  // Ends on day 30 for 30/31-day months (or last day for Feb)
   const currentMonthLastDay = new Date(year, month, 0).getDate();
   const endDay = currentMonthLastDay >= 30 ? 30 : currentMonthLastDay;
   const endMonthShort = MONTH_NAMES_SHORT[month - 1];
@@ -110,22 +94,15 @@ export const getCustomMonthRange = (monthStr, preference = "last-day") => {
   };
 };
 
-/**
- * Checks if a date falls near the end of the month (last 4 days: 27th to 31st)
- */
 export const isEndOfMonth = (dateValue) => {
   if (!dateValue) return false;
   const d = new Date(dateValue);
   if (isNaN(d.getTime())) return false;
-  // Use UTC or noon-safe day extraction
   const day = d.getUTCDate();
   const lastDay = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
   return day >= lastDay - 3;
 };
 
-/**
- * Groups transactions day-by-day in descending chronological order
- */
 export const groupTransactionsByDate = (transactions = []) => {
   const getLocalDateStr = (d) => {
     const year = d.getFullYear();
@@ -216,10 +193,6 @@ export const formatCurrency = (amount, symbol = "₹") => {
   })}`;
 };
 
-/**
- * Daily average run-rate from the summary object.
- * Falls back to expense / daysInPeriod when the backend value is absent.
- */
 export const getDailyAverage = (summary = {}) => {
   const avg = Number(summary?.dailyAverage);
   if (avg > 0) return avg;

@@ -20,7 +20,7 @@ const PALETTE = [
   "#64748b",
 ];
 
-const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
+const CategoryPieChart = ({ transactions = [] }) => {
   const { categoryData, totalExpense, highestCategory } = useMemo(() => {
     const list = Array.isArray(transactions) ? transactions : [];
     const expenseTxs = list.filter((t) => t && t.type === "expense");
@@ -97,7 +97,7 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
                 </Pie>
                 <Tooltip
                   formatter={(value, name) => [
-                    formatCurrency(Number(value), currency),
+                    formatCurrency(Number(value)),
                     name,
                   ]}
                   contentStyle={{
@@ -126,7 +126,7 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
                 </div>
                 <span className={styles.legendFigures}>
                   {item.percentage.toFixed(0)}%
-                  <span className={styles.legendAmount}> ({formatCurrency(item.value, currency)})</span>
+                  <span className={styles.legendAmount}> ({formatCurrency(item.value)})</span>
                 </span>
               </div>
             ))}

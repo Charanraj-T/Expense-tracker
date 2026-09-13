@@ -164,7 +164,6 @@ const logoutUser = async (req, res) => {
       const payload = verifyRefreshToken(refreshToken);
       await Session.deleteOne({ _id: payload.sessionId });
     } catch (err) {
-      // ignore invalid or expired tokens; cookie is cleared below
     }
   }
   clearRefreshCookie(res);

@@ -218,6 +218,10 @@
     height: 160px;
   }
 
+  .donutCenter {
+    display: none;
+  }
+
   .donutCenterValue {
     font-size: 0.95rem;
     max-width: 100px;

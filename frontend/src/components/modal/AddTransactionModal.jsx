@@ -25,7 +25,6 @@ const AddTransactionModal = () => {
     addTransaction,
     updateTransaction,
     editingTransaction,
-    currency,
   } = useTransactionStore();
 
   const amountRef = useRef(null);
@@ -213,7 +212,7 @@ const AddTransactionModal = () => {
 
           <div className={styles.amountContainer}>
             <div className={styles.amountInputGroup}>
-              <span className={styles.amountPrefix}>{currency}</span>
+              <span className={styles.amountPrefix}>₹</span>
               <input
                 ref={amountRef}
                 type="number"

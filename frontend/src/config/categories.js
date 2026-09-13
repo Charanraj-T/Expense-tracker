@@ -18,10 +18,6 @@ import {
   Gem,
 } from "lucide-react";
 
-/**
- * Transaction categories grouped by type, each with its display label and icon.
- * These drive the category dropdown in the add/edit modal.
- */
 export const CATEGORY_GROUPS = {
   expense: [
     { name: "food", label: "Food & Dining", icon: Utensils },

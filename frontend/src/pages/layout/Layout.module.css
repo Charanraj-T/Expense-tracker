@@ -26,7 +26,7 @@
 }
 
 .topBar {
-  display: none; /* Hidden on desktop: sidebar Menu already provides brand logo, navigation, and user avatar */
+  display: none;
 }
 
 .topBarLeft {

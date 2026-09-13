@@ -15,7 +15,6 @@ const Transactions = () => {
     pagination,
     filterType,
     search,
-    currency,
     loading,
     setFilterType,
     setPage,
@@ -70,7 +69,6 @@ const Transactions = () => {
     <TransactionItem
       key={tx._id}
       transaction={tx}
-      currency={currency}
       onDelete={handleDelete}
       onEdit={() => openEditModal(tx)}
     />

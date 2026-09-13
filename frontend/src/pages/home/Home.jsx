@@ -16,7 +16,6 @@ const Home = () => {
     todayTransactions,
     chartTransactions,
     summary,
-    currency,
     openAddModal,
     openEditModal,
   } = useTransactionStore();
@@ -35,7 +34,7 @@ const Home = () => {
             <MonthSelector />
             <div className={styles.mobileRunRatePill} title="Daily Average Run-Rate">
               <Activity size={13} className={styles.runRateIcon} strokeWidth={2.4} />
-              <span>{formatCurrency(dailyAvg, currency)}/day</span>
+              <span>{formatCurrency(dailyAvg)}/day</span>
             </div>
           </div>
 
@@ -64,7 +63,7 @@ const Home = () => {
       <SummaryCards />
 
       <div className={styles.midGrid}>
-        <CategoryPieChart transactions={chartTransactions} currency={currency} />
+        <CategoryPieChart transactions={chartTransactions} />
 
         <div className={styles.recentCard}>
           <div className={styles.recentHeader}>
@@ -117,7 +116,6 @@ const Home = () => {
                 <TransactionItem
                   key={tx._id}
                   transaction={tx}
-                  currency={currency}
                   onEdit={() => openEditModal(tx)}
                 />
               ))}

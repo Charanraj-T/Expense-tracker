@@ -21,14 +21,12 @@ const setStoredPreference = (key, value) => {
   try {
     localStorage.setItem(key, value);
   } catch {
-    // Ignore storage quota or access errors
   }
 };
 
 export const useTransactionStore = create((set, get) => ({
   currentMonth: getCurrentMonthString(),
   datePreference: getStoredPreference("date_preference", "last-day"),
-  currency: getStoredPreference("currency", "₹"),
 
   summary: { income: 0, expense: 0, investment: 0, dailyAverage: 0, daysInPeriod: 30 },
   transactions: [],
@@ -72,11 +70,6 @@ export const useTransactionStore = create((set, get) => ({
     setStoredPreference("date_preference", preference);
     set({ datePreference: preference });
     get().refreshAllData();
-  },
-
-  setCurrency: (currency) => {
-    setStoredPreference("currency", currency);
-    set({ currency });
   },
 
   setFilterType: (filterType) => {

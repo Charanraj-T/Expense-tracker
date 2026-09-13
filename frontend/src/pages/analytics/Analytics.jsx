@@ -67,7 +67,7 @@ const getCategoryColor = (name, index = 0) => {
 
 const getCategoryIcon = (name) => getCategoryByName(name)?.icon || CreditCard;
 
-const CustomChartTooltip = ({ active, payload, label, currency = "₹" }) => {
+const CustomChartTooltip = ({ active, payload, label }) => {
   if (!active || !Array.isArray(payload) || !payload.length) return null;
 
   return (
@@ -85,7 +85,7 @@ const CustomChartTooltip = ({ active, payload, label, currency = "₹" }) => {
               {item.name || "Value"}:
             </span>
             <span className={styles.tooltipValue}>
-              {formatCurrency(item.value, currency)}
+              {formatCurrency(item.value)}
             </span>
           </div>
         );
@@ -95,7 +95,7 @@ const CustomChartTooltip = ({ active, payload, label, currency = "₹" }) => {
 };
 
 const Analytics = () => {
-  const { currentMonth, datePreference, currency } = useTransactionStore();
+  const { currentMonth, datePreference } = useTransactionStore();
 
   const [rangePeriod, setRangePeriod] = useState("this_month");
   const [filterType, setFilterType] = useState("");
@@ -517,7 +517,7 @@ const Analytics = () => {
             <div>
               <h2 className={styles.cardHeaderTitle}>Spending by Category</h2>
               <div className={styles.cardHeaderSub}>
-                Total Outflow: {formatCurrency(analyticsData.categoryTotal, currency)}
+                Total Outflow: {formatCurrency(analyticsData.categoryTotal)}
               </div>
             </div>
             <span className={styles.cardHeaderBadge}>
@@ -576,7 +576,7 @@ const Analytics = () => {
                     </div>
                     <div className={styles.categoryItemRight}>
                       <span className={styles.categoryAmount}>
-                        {formatCurrency(cat.amount, currency)}
+                        {formatCurrency(cat.amount)}
                       </span>
                       <span className={styles.categoryPercentage}>
                         {cat.percent}%
@@ -692,7 +692,7 @@ const Analytics = () => {
                     }
                   />
                   <Tooltip
-                    content={<CustomChartTooltip currency={currency} />}
+                    content={<CustomChartTooltip />}
                   />
                   {filterType === "" ? (
                     <>
@@ -738,7 +738,7 @@ const Analytics = () => {
                           stroke="#94a3b8"
                           strokeDasharray="3 3"
                           label={{
-                            value: `Avg: ${formatCurrency(averageValue, currency)}`,
+                            value: `Avg: ${formatCurrency(averageValue)}`,
                             fill: "#64748b",
                             fontSize: 11,
                             position: "top",
@@ -762,7 +762,7 @@ const Analytics = () => {
               <div className={styles.highlightContent}>
                 <span className={styles.highlightLabel}>Total Inflow</span>
                 <span className={styles.highlightAmount}>
-                  {formatCurrency(analyticsData.totalIncome, currency)}
+                  {formatCurrency(analyticsData.totalIncome)}
                 </span>
               </div>
             </div>
@@ -776,7 +776,7 @@ const Analytics = () => {
               <div className={styles.highlightContent}>
                 <span className={styles.highlightLabel}>Total Outflow</span>
                 <span className={styles.highlightAmount}>
-                  {formatCurrency(analyticsData.totalExpense, currency)}
+                  {formatCurrency(analyticsData.totalExpense)}
                 </span>
               </div>
             </div>
@@ -793,7 +793,7 @@ const Analytics = () => {
               }}
             >
               {analyticsData.netSavings >= 0 ? "+" : ""}
-              {formatCurrency(analyticsData.netSavings, currency)} (
+              {formatCurrency(analyticsData.netSavings)} (
               {analyticsData.savingsRate.toFixed(1)}%)
             </span>
           </div>

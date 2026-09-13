@@ -12,8 +12,6 @@ const Account = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const {
-    currency,
-    setCurrency,
     datePreference,
     setDatePreference,
     currentMonth,
@@ -75,7 +73,7 @@ const Account = () => {
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>Tracked</span>
               <span className={styles.statValue}>
-                {formatCurrency(summary.expense, currency)} this month
+                {formatCurrency(summary.expense)} this month
               </span>
             </div>
           </div>
@@ -87,7 +85,7 @@ const Account = () => {
             <div className={styles.statInfo}>
               <span className={styles.statLabel}>Logged</span>
               <span className={styles.statValue}>
-                {pagination?.total ?? transactions.length} entries
+                {pagination?.total ?? 0} entries
               </span>
             </div>
           </div>
@@ -98,33 +96,9 @@ const Account = () => {
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Application Preferences</h2>
           <p className={styles.cardDescription}>
-            Customize your currency display and cycle calculation.
+            Customize your cycle calculation.
           </p>
         </div>
-
-        <div className={styles.settingItem}>
-          <div className={styles.settingText}>
-            <label className={styles.settingLabel} htmlFor="currencySelect">
-              Base Currency
-            </label>
-            <span className={styles.settingDescription}>
-              Symbol used to display all monetary figures across the application
-            </span>
-          </div>
-          <select
-            id="currencySelect"
-            className={styles.selectInput}
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-          >
-            <option value="₹">₹ (INR - Indian Rupee)</option>
-            <option value="$">$ (USD - US Dollar)</option>
-            <option value="€">€ (EUR - Euro)</option>
-            <option value="£">£ (GBP - British Pound)</option>
-          </select>
-        </div>
-
-        <div className={styles.divider} />
 
         <div className={styles.settingItemColumn}>
           <div className={styles.settingText}>

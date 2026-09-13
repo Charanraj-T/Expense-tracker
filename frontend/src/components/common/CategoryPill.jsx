@@ -2,7 +2,7 @@ import styles from "./CategoryPill.module.css";
 
 const CategoryPill = ({
   label,
-  variant = "neutral", // income | expense | investment | neutral
+  variant = "neutral",
   isSelected = false,
   onClick,
   icon,
