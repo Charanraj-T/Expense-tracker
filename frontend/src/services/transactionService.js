@@ -5,6 +5,11 @@ export const getTransactions = async (params) => {
   return data;
 };
 
+export const getTodayTransactions = async (params) => {
+  const { data } = await api.get("/transactions/today", { params });
+  return data;
+};
+
 export const createTransaction = async (payload) => {
   const { data } = await api.post("/transactions", payload);
   return data;

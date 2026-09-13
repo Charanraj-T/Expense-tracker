@@ -1,8 +1,3 @@
-/**
- * Date and Month Range Utilities
- * Designed around month-based thinking with custom date ranges.
- */
-
 const MONTH_NAMES = [
   "January",
   "February",
@@ -33,14 +28,19 @@ const MONTH_NAMES_SHORT = [
   "Dec",
 ];
 
-/**
- * Returns current month string in YYYY-MM format.
- */
 export const getCurrentMonthString = () => {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   return `${year}-${month}`;
+};
+
+export const getTodayDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 /**
@@ -61,7 +61,7 @@ export const getCustomMonthRange = (monthStr, preference = "last-day") => {
 
   const [yearStr, monthIndexStr] = monthStr.split("-");
   const year = parseInt(yearStr, 10);
-  const month = parseInt(monthIndexStr, 10); // 1 - 12
+  const month = parseInt(monthIndexStr, 10);
   const monthName = MONTH_NAMES[month - 1];
 
   const formatDateToYMD = (d) => {
@@ -73,7 +73,7 @@ export const getCustomMonthRange = (monthStr, preference = "last-day") => {
 
   if (preference === "first-day") {
     const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0); // last day of current month
+    const endDate = new Date(year, month, 0);
     return {
       monthName: `${monthName} ${year}`,
       startDateStr: formatDateToYMD(startDate),
@@ -124,22 +124,7 @@ export const isEndOfMonth = (dateValue) => {
 };
 
 /**
- * Formats a date string nicely (e.g., "Oct 28, 2024") in a timezone-safe manner
- */
-export const formatDate = (dateValue) => {
-  if (!dateValue) return "";
-  const d = new Date(dateValue);
-  if (isNaN(d.getTime())) return String(dateValue);
-  return d.toLocaleDateString("en-US", {
-    timeZone: "UTC",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
-/**
- * Groups transactions into Today, Yesterday, and Older in a timezone-safe manner
+ * Groups transactions day-by-day in descending chronological order
  */
 export const groupTransactionsByDate = (transactions = []) => {
   const getLocalDateStr = (d) => {
@@ -156,13 +141,10 @@ export const groupTransactionsByDate = (transactions = []) => {
   yesterday.setDate(now.getDate() - 1);
   const yesterdayStr = getLocalDateStr(yesterday);
 
-  const groups = {
-    today: [],
-    yesterday: [],
-    older: [],
-  };
+  const map = new Map();
+  const list = Array.isArray(transactions) ? transactions : [];
 
-  transactions.forEach((tx) => {
+  list.forEach((tx) => {
     if (!tx || !tx.date) return;
     let txDateStr = "";
     if (typeof tx.date === "string" && tx.date.length >= 10) {
@@ -172,25 +154,76 @@ export const groupTransactionsByDate = (transactions = []) => {
       txDateStr = isNaN(d.getTime()) ? "" : getLocalDateStr(d);
     }
 
-    if (txDateStr === todayStr) {
-      groups.today.push(tx);
-    } else if (txDateStr === yesterdayStr) {
-      groups.yesterday.push(tx);
-    } else {
-      groups.older.push(tx);
+    if (!txDateStr) return;
+    if (!map.has(txDateStr)) {
+      map.set(txDateStr, []);
     }
+    map.get(txDateStr).push(tx);
   });
 
-  return groups;
+  const sortedDates = Array.from(map.keys()).sort((a, b) => b.localeCompare(a));
+
+  return sortedDates.map((dateStr) => {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const dateObj = new Date(Date.UTC(y, m - 1, d));
+
+    let title = "";
+    let subtitle = "";
+
+    if (dateStr === todayStr) {
+      title = "Today";
+      subtitle = dateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+    } else if (dateStr === yesterdayStr) {
+      title = "Yesterday";
+      subtitle = dateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+    } else {
+      title = dateObj.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+      subtitle = dateObj.toLocaleDateString("en-US", {
+        weekday: "short",
+        timeZone: "UTC",
+      });
+    }
+
+    return {
+      dateStr,
+      title,
+      subtitle,
+      transactions: map.get(dateStr),
+    };
+  });
 };
 
-/**
- * Currency formatter
- */
 export const formatCurrency = (amount, symbol = "₹") => {
   const num = Number(amount) || 0;
   return `${symbol} ${num.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   })}`;
+};
+
+/**
+ * Daily average run-rate from the summary object.
+ * Falls back to expense / daysInPeriod when the backend value is absent.
+ */
+export const getDailyAverage = (summary = {}) => {
+  const avg = Number(summary?.dailyAverage);
+  if (avg > 0) return avg;
+  const expense = Number(summary?.expense) || 0;
+  const days = Number(summary?.daysInPeriod);
+  return expense > 0 && days > 0 ? expense / days : 0;
 };

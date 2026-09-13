@@ -1,12 +1,16 @@
 .chartCard {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   height: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .chartHeader {
@@ -14,12 +18,14 @@
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: var(--space-md);
+  min-width: 0;
 }
 
 .headerLeft {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .chartTitle {
@@ -27,12 +33,18 @@
   font-weight: 700;
   color: var(--color-text-main);
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chartSub {
   font-size: var(--font-size-sm);
   color: var(--color-text-subtle);
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .countBadge {
@@ -42,6 +54,7 @@
   font-weight: 700;
   padding: 0.25rem 0.65rem;
   border-radius: var(--radius-full);
+  flex-shrink: 0;
 }
 
 .chartBody {
@@ -50,6 +63,8 @@
   justify-content: center;
   flex: 1;
   min-height: 200px;
+  min-width: 0;
+  width: 100%;
 }
 
 .emptyState {
@@ -59,12 +74,12 @@
   padding: 2rem 1rem;
 }
 
-/* Donut Geometry */
 .pieContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  min-width: 0;
   gap: var(--space-lg);
   flex-wrap: wrap;
 }
@@ -106,9 +121,10 @@
   flex-direction: column;
   gap: 0.55rem;
   flex: 1;
-  min-width: 170px;
+  min-width: 150px;
   max-height: 190px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .legendItem {
@@ -117,6 +133,8 @@
   justify-content: space-between;
   font-size: var(--font-size-sm);
   color: var(--color-text-main);
+  min-width: 0;
+  gap: 0.5rem;
 }
 
 .legendDotLabel {
@@ -125,6 +143,11 @@
   gap: 0.5rem;
   text-transform: capitalize;
   font-weight: 500;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dot {
@@ -139,6 +162,8 @@
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
   font-size: 0.775rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .cardFooter {
@@ -159,9 +184,72 @@
   text-transform: capitalize;
 }
 
-/* Bar Chart Specific */
-.barChartBox {
-  width: 100%;
-  height: 230px;
-  min-width: 0;
+.legendAmount {
+  display: inline;
+}
+
+.catLabelText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .chartCard {
+    padding: 1.15rem 1rem;
+  }
+
+  .chartHeader {
+    margin-bottom: var(--space-sm);
+  }
+
+  .chartTitle {
+    font-size: 1rem;
+  }
+
+  .pieContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .svgWrapper {
+    width: 160px;
+    height: 160px;
+  }
+
+  .donutCenterValue {
+    font-size: 0.95rem;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: capitalize;
+  }
+
+  .legendList {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    max-height: none;
+    min-width: unset;
+  }
+
+  .legendItem {
+    font-size: 0.75rem;
+  }
+
+  .legendDotLabel {
+    gap: 0.35rem;
+  }
+
+  .legendFigures {
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .legendAmount {
+    display: none;
+  }
 }

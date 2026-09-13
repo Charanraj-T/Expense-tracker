@@ -51,7 +51,7 @@ const parseTransactionInput = (body) => {
   };
 };
 
-const buildFilter = ({ userId, type, month, startDate, endDate, search }) => {
+const buildFilter = ({ userId, type, category, month, startDate, endDate, search }) => {
   const filter = { userId: new mongoose.Types.ObjectId(userId) };
 
   if (type) {
@@ -62,6 +62,10 @@ const buildFilter = ({ userId, type, month, startDate, endDate, search }) => {
       );
     }
     filter.type = type;
+  }
+
+  if (category) {
+    filter.category = String(category).trim().toLowerCase();
   }
 
   if (startDate || endDate) {
@@ -127,6 +131,7 @@ const getTransactions = async (req, res) => {
   const filter = buildFilter({
     userId: req.user.userId,
     type: req.query.type,
+    category: req.query.category,
     month: req.query.month,
     startDate: req.query.startDate,
     endDate: req.query.endDate,
@@ -134,11 +139,11 @@ const getTransactions = async (req, res) => {
   });
 
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
-  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 100);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), 1000);
 
   const [transactions, total] = await Promise.all([
     Transaction.find(filter)
-      .sort({ date: -1 })
+      .sort({ date: -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit),
     Transaction.countDocuments(filter),
@@ -155,10 +160,42 @@ const getTransactions = async (req, res) => {
   });
 };
 
+const getTodayTransactions = async (req, res) => {
+  const targetDate = req.query.clientDate || req.query.startDate;
+  let sYear, sMonth, sDay;
+  if (targetDate && /^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+    [sYear, sMonth, sDay] = targetDate.split("-").map(Number);
+  } else {
+    const now = new Date();
+    sYear = now.getUTCFullYear();
+    sMonth = now.getUTCMonth() + 1;
+    sDay = now.getUTCDate();
+  }
+
+  const filter = {
+    userId: new mongoose.Types.ObjectId(req.user.userId),
+    date: {
+      $gte: new Date(Date.UTC(sYear, sMonth - 1, sDay, 0, 0, 0, 0)),
+      $lte: new Date(Date.UTC(sYear, sMonth - 1, sDay, 23, 59, 59, 999)),
+    },
+  };
+
+  const transactions = await Transaction.find(filter).sort({
+    date: -1,
+    createdAt: -1,
+  });
+
+  res.status(200).json({
+    transactions,
+    total: transactions.length,
+  });
+};
+
 const getTransactionSummary = async (req, res) => {
   const filter = buildFilter({
     userId: req.user.userId,
     type: req.query.type,
+    category: req.query.category,
     month: req.query.month,
     startDate: req.query.startDate,
     endDate: req.query.endDate,
@@ -182,10 +219,27 @@ const getTransactionSummary = async (req, res) => {
     },
   ]);
 
+  let daysInPeriod = 30;
+  if (req.query.startDate && req.query.endDate) {
+    const [sYear, sMonth, sDay] = req.query.startDate.split("-").map(Number);
+    const [eYear, eMonth, eDay] = req.query.endDate.split("-").map(Number);
+    const startMs = Date.UTC(sYear, sMonth - 1, sDay);
+    const endMs = Date.UTC(eYear, eMonth - 1, eDay);
+    daysInPeriod = Math.max(1, Math.round((endMs - startMs) / 86400000) + 1);
+  }
+
+  const expenseTotal = result?.expense || 0;
+  const dailyAverage =
+    expenseTotal > 0
+      ? Math.round((expenseTotal / daysInPeriod) * 100) / 100
+      : 0;
+
   const summary = {
     income: result?.income || 0,
-    expense: result?.expense || 0,
+    expense: expenseTotal,
     investment: result?.investment || 0,
+    dailyAverage,
+    daysInPeriod,
   };
 
   res.status(200).json(summary);
@@ -232,7 +286,10 @@ const exportTransactionsCsv = async (req, res) => {
     search: req.query.search,
   });
 
-  const transactions = await Transaction.find(filter).sort({ date: -1 });
+  const transactions = await Transaction.find(filter).sort({
+    date: -1,
+    createdAt: -1,
+  });
 
   const headers = ["Date", "Type", "Title", "Category", "Amount", "Note"];
   const lines = transactions.map((t) =>
@@ -256,6 +313,7 @@ const exportTransactionsCsv = async (req, res) => {
 module.exports = {
   addTransaction,
   getTransactions,
+  getTodayTransactions,
   getTransactionSummary,
   updateTransaction,
   deleteTransaction,

@@ -1,14 +1,43 @@
-import { ArrowDownLeft, ArrowUpRight, Landmark } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Landmark,
+  Activity,
+} from "lucide-react";
 import { useTransactionStore } from "../../store/transactionStore";
-import { formatCurrency } from "../../utils/dateRange";
+import { formatCurrency, getDailyAverage } from "../../utils/dateRange";
 import styles from "./SummaryCards.module.css";
 
 const SummaryCards = () => {
   const { summary, currency } = useTransactionStore();
 
+  const dailyAvg = getDailyAverage(summary);
+
   return (
     <div className={styles.grid}>
-      {/* 1. Total Income Card */}
+      <div className={`${styles.card} ${styles.dailyCard}`}>
+        <div className={styles.dailyMainContent}>
+          <div className={styles.dailyHeaderGroup}>
+            <div className={`${styles.iconCircle} ${styles.dailyIconCircle}`}>
+              <Activity size={18} strokeWidth={2.4} />
+            </div>
+            <div className={styles.dailyTitleGroup}>
+              <span className={styles.cardTitle}>Daily Average Run-Rate</span>
+              <span className={styles.dailySubtext}>Spending velocity</span>
+            </div>
+          </div>
+          <div className={`${styles.amount} ${styles.dailyAmount}`}>
+            {formatCurrency(dailyAvg, currency)}
+            <span className={styles.perDay}>/day</span>
+          </div>
+        </div>
+        <div className={styles.bottomRow}>
+          <span className={`${styles.badge} ${styles.dailyBadge}`}>
+            Daily Run-Rate
+          </span>
+        </div>
+      </div>
+
       <div className={styles.card}>
         <div className={styles.topRow}>
           <span className={styles.cardTitle}>Total Income</span>
@@ -17,7 +46,7 @@ const SummaryCards = () => {
           </div>
         </div>
         <div className={styles.amount}>
-          {formatCurrency(summary.income, currency)}
+          {formatCurrency(summary?.income || 0, currency)}
         </div>
         <div className={styles.bottomRow}>
           <span className={`${styles.badge} ${styles.incomeBadge}`}>
@@ -26,7 +55,6 @@ const SummaryCards = () => {
         </div>
       </div>
 
-      {/* 2. Total Expenses Card */}
       <div className={styles.card}>
         <div className={styles.topRow}>
           <span className={styles.cardTitle}>Total Expenses</span>
@@ -35,7 +63,7 @@ const SummaryCards = () => {
           </div>
         </div>
         <div className={styles.amount}>
-          {formatCurrency(summary.expense, currency)}
+          {formatCurrency(summary?.expense || 0, currency)}
         </div>
         <div className={styles.bottomRow}>
           <span className={`${styles.badge} ${styles.expenseBadge}`}>
@@ -44,7 +72,6 @@ const SummaryCards = () => {
         </div>
       </div>
 
-      {/* 3. Invested Card */}
       <div className={styles.card}>
         <div className={styles.topRow}>
           <span className={styles.cardTitle}>Invested</span>
@@ -53,7 +80,7 @@ const SummaryCards = () => {
           </div>
         </div>
         <div className={styles.amount}>
-          {formatCurrency(summary.investment, currency)}
+          {formatCurrency(summary?.investment || 0, currency)}
         </div>
         <div className={styles.bottomRow}>
           <span className={`${styles.badge} ${styles.investmentBadge}`}>

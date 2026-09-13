@@ -1,24 +1,22 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, ArrowRight } from "lucide-react";
+import { Plus, ArrowRight, Activity, BarChart3 } from "lucide-react";
 import { useTransactionStore } from "../../store/transactionStore";
 import MonthSelector from "../../components/common/MonthSelector";
 import SummaryCards from "../../components/common/SummaryCards";
 import CategoryPieChart from "../../components/charts/CategoryPieChart";
-import TrendLineChart from "../../components/charts/TrendLineChart";
 import TransactionItem from "../../components/common/TransactionItem";
-import { getCustomMonthRange } from "../../utils/dateRange";
+import { formatCurrency, getDailyAverage } from "../../utils/dateRange";
 import styles from "./Home.module.css";
 
 const Home = () => {
   const navigate = useNavigate();
   const {
     refreshAllData,
-    transactions,
+    todayTransactions,
     chartTransactions,
+    summary,
     currency,
-    currentMonth,
-    datePreference,
     openAddModal,
     openEditModal,
   } = useTransactionStore();
@@ -27,58 +25,95 @@ const Home = () => {
     refreshAllData();
   }, [refreshAllData]);
 
-  const recentTxs = transactions.slice(0, 4);
-  const dataForCharts = chartTransactions;
-  const range = getCustomMonthRange(currentMonth, datePreference);
+  const dailyAvg = getDailyAverage(summary);
 
   return (
     <div className={styles.container}>
-      {/* Top Header: FINANCIAL OVERVIEW + Month Selector + CTA */}
       <div className={styles.topSection}>
-        <span className={styles.overline}>FINANCIAL OVERVIEW</span>
         <div className={styles.headerBar}>
-          <MonthSelector />
-          <button
-            type="button"
-            className={styles.addBtn}
-            onClick={openAddModal}
-          >
-            <Plus size={16} />
-            <span>Add Transaction</span>
-          </button>
+          <div className={styles.monthAndRunRateRow}>
+            <MonthSelector />
+            <div className={styles.mobileRunRatePill} title="Daily Average Run-Rate">
+              <Activity size={13} className={styles.runRateIcon} strokeWidth={2.4} />
+              <span>{formatCurrency(dailyAvg, currency)}/day</span>
+            </div>
+          </div>
+
+          <div className={styles.headerActionGroup}>
+            <button
+              type="button"
+              className={styles.analyticsQuickBtn}
+              onClick={() => navigate("/analytics")}
+              title="View Visual Analytics"
+            >
+              <BarChart3 size={15} />
+              <span>Analytics</span>
+            </button>
+            <button
+              type="button"
+              className={styles.addBtn}
+              onClick={openAddModal}
+            >
+              <Plus size={16} />
+              <span>Add Transaction</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* 3 Summary Cards */}
       <SummaryCards />
 
-      {/* Middle Row: Category Breakdown + Recent Activity */}
       <div className={styles.midGrid}>
-        <CategoryPieChart transactions={dataForCharts} currency={currency} />
+        <CategoryPieChart transactions={chartTransactions} currency={currency} />
 
         <div className={styles.recentCard}>
           <div className={styles.recentHeader}>
             <div className={styles.recentTitleGroup}>
               <span className={styles.recentBar} />
-              <h3 className={styles.recentTitle}>Recent Activity</h3>
+              <h3 className={styles.recentTitle}>Today's Transactions</h3>
+              {Array.isArray(todayTransactions) && todayTransactions.length > 0 && (
+                <span className={styles.countBadge}>
+                  {todayTransactions.length}
+                </span>
+              )}
             </div>
-            <button
-              type="button"
-              className={styles.viewAllBtn}
-              onClick={() => navigate("/transactions")}
-            >
-              <span>View all transactions</span>
-              <ArrowRight size={14} />
-            </button>
+            <div className={styles.recentActions}>
+              <button
+                type="button"
+                className={styles.viewAnalyticsLink}
+                onClick={() => navigate("/analytics")}
+              >
+                <BarChart3 size={14} />
+                <span>Visual insights</span>
+              </button>
+              <button
+                type="button"
+                className={styles.viewAllBtn}
+                onClick={() => navigate("/transactions")}
+              >
+                <span>All transactions</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
           </div>
 
-          {recentTxs.length === 0 ? (
-            <p className={styles.emptyState}>
-              No transactions logged for this cycle yet.
-            </p>
+          {!Array.isArray(todayTransactions) || todayTransactions.length === 0 ? (
+            <div className={styles.emptyTodayState}>
+              <p className={styles.emptyState}>
+                No transactions logged today.
+              </p>
+              <button
+                type="button"
+                className={styles.logTodayBtn}
+                onClick={openAddModal}
+              >
+                <Plus size={14} />
+                <span>Log today's expense</span>
+              </button>
+            </div>
           ) : (
             <div className={styles.txList}>
-              {recentTxs.map((tx) => (
+              {todayTransactions.map((tx) => (
                 <TransactionItem
                   key={tx._id}
                   transaction={tx}
@@ -89,16 +124,6 @@ const Home = () => {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Bottom Row: Weekly Spending Trend */}
-      <div className={styles.bottomSection}>
-        <TrendLineChart
-          transactions={dataForCharts}
-          currency={currency}
-          startDate={range.startDateStr}
-          endDate={range.endDateStr}
-        />
       </div>
     </div>
   );

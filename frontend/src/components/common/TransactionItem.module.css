@@ -9,6 +9,9 @@
   box-shadow: var(--shadow-sm);
   transition: all 0.15s ease-in-out;
   gap: var(--space-md);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .row:hover {
@@ -24,6 +27,9 @@
   display: flex;
   align-items: center;
   gap: 0.875rem;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .iconCircle {
@@ -56,12 +62,16 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .titleRow {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .title {
@@ -69,6 +79,11 @@
   font-weight: 700;
   color: var(--color-text-main);
   text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .metaRow {
@@ -77,22 +92,31 @@
   gap: 0.45rem;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
-  flex-wrap: wrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .dotSeparator {
   color: var(--color-text-subtle);
   font-size: 0.6rem;
+  flex-shrink: 0;
 }
 
 .noteText {
   color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
 }
 
 .rightGroup {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   text-align: right;
   flex-shrink: 0;
 }
@@ -102,6 +126,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.15rem;
+  flex-shrink: 0;
 }
 
 .amount {
@@ -109,6 +134,7 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .incomeAmount {
@@ -138,6 +164,7 @@
   border-radius: var(--radius-sm);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 .editBtn,
@@ -152,6 +179,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .editBtn:hover {
@@ -162,4 +190,55 @@
 .deleteBtn:hover {
   color: var(--color-expense);
   background: var(--color-expense-bg);
+}
+
+@media (max-width: 640px) {
+  .row {
+    padding: 0.75rem 0.85rem;
+    border-radius: var(--radius-lg);
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .iconCircle {
+    width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+  }
+
+  .title {
+    font-size: 0.875rem;
+  }
+
+  .metaRow {
+    font-size: 0.75rem;
+    gap: 0.35rem;
+  }
+
+  .amount {
+    font-size: 0.9375rem;
+  }
+
+  .statusLabel {
+    display: none;
+  }
+
+  .noteText {
+    max-width: 70px;
+  }
+
+  .rightGroup {
+    gap: 0.25rem;
+  }
+
+  .editBtn,
+  .deleteBtn {
+    padding: 0.2rem;
+  }
+
+  .editBtn svg,
+  .deleteBtn svg {
+    width: 13px;
+    height: 13px;
+  }
 }

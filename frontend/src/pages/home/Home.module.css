@@ -13,20 +13,66 @@
   gap: 0.5rem;
 }
 
-.overline {
-  font-size: var(--font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
-
 .headerBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--space-md);
+}
+
+.monthAndRunRateRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.mobileRunRatePill {
+  display: none;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 0.42rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  border: 1px solid rgba(70, 72, 212, 0.15);
+}
+
+.runRateIcon {
+  flex-shrink: 0;
+}
+
+.headerActionGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.analyticsQuickBtn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-main);
+  padding: 0.58rem 1.15rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.analyticsQuickBtn:hover {
+  background: var(--color-surface-dim);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
 }
 
 .addBtn {
@@ -71,8 +117,10 @@
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  height: 100%;
   box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  height: 100%;
 }
 
 .recentHeader {
@@ -82,6 +130,8 @@
   margin-bottom: var(--space-md);
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .recentTitleGroup {
@@ -103,6 +153,29 @@
   color: var(--color-text-main);
   letter-spacing: -0.01em;
   margin: 0;
+}
+
+.recentActions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.viewAnalyticsLink {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.viewAnalyticsLink:hover {
+  color: var(--color-primary);
 }
 
 .viewAllBtn {
@@ -129,6 +202,48 @@
   gap: 0.75rem;
 }
 
+.countBadge {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.emptyTodayState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1rem;
+}
+
+.emptyTodayState .emptyState {
+  padding: 0;
+}
+
+.logTodayBtn {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid rgba(70, 72, 212, 0.2);
+  border-radius: var(--radius-full);
+  padding: 0.45rem 1rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.logTodayBtn:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
 .emptyState {
   color: var(--color-text-light);
   font-size: var(--font-size-sm);
@@ -136,6 +251,34 @@
   padding: 3rem 1rem;
 }
 
-.bottomSection {
-  width: 100%;
+@media (max-width: 768px) {
+  .container {
+    gap: 1rem;
+  }
+
+  .headerBar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .monthAndRunRateRow {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mobileRunRatePill {
+    display: inline-flex;
+  }
+
+  .headerActionGroup {
+    display: none;
+  }
+
+  .addBtn {
+    display: none;
+  }
+
+  .recentCard {
+    display: none !important;
+  }
 }

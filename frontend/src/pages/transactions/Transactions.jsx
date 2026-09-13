@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Download, Plus, Search, FileText } from "lucide-react";
 import { useTransactionStore } from "../../store/transactionStore";
+import { exportTransactionsCsv } from "../../services/transactionService";
+import { downloadBlob } from "../../utils/exportCsv";
+import { getErrorMessage } from "../../api/axios";
 import MonthSelector from "../../components/common/MonthSelector";
 import TransactionItem from "../../components/common/TransactionItem";
 import { groupTransactionsByDate } from "../../utils/dateRange";
-import { exportTransactionsToCsv } from "../../utils/exportCsv";
 import styles from "./Transactions.module.css";
 
 const Transactions = () => {
@@ -22,6 +24,7 @@ const Transactions = () => {
     deleteTransaction,
     openAddModal,
     openEditModal,
+    buildRangeParams,
   } = useTransactionStore();
 
   const [searchInput, setSearchInput] = useState("");
@@ -40,13 +43,26 @@ const Transactions = () => {
   }, [fetchTransactions]);
 
   const groups = useMemo(() => {
-    return groupTransactionsByDate(transactions);
+    return groupTransactionsByDate(Array.isArray(transactions) ? transactions : []);
   }, [transactions]);
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
     if (window.confirm("Delete this transaction?")) {
       await deleteTransaction(id);
+    }
+  };
+
+  const handleExportCsv = async () => {
+    try {
+      const params = buildRangeParams({
+        ...(filterType && { type: filterType }),
+        ...(search && { search }),
+      });
+      const blob = await exportTransactionsCsv(params);
+      downloadBlob(blob, `transactions_${Date.now()}.csv`);
+    } catch (err) {
+      alert(getErrorMessage(err));
     }
   };
 
@@ -62,18 +78,17 @@ const Transactions = () => {
 
   return (
     <div className={styles.container}>
-      {/* Top Header Bar */}
       <div className={styles.topBar}>
-        <div className={styles.titleSection}>
-          <span className={styles.overline}>LEDGER & ACTIVITY</span>
-          <h1 className={styles.pageTitle}>Transactions</h1>
+        <h1 className={styles.pageTitle}>Transactions</h1>
+        <div className={styles.monthSelectorWrap}>
+          <MonthSelector />
         </div>
 
         <div className={styles.actionGroup}>
           <button
             type="button"
             className={styles.exportBtn}
-            onClick={() => exportTransactionsToCsv(transactions, `transactions_${Date.now()}.csv`)}
+            onClick={handleExportCsv}
           >
             <Download size={15} />
             Export CSV
@@ -84,30 +99,27 @@ const Transactions = () => {
         </div>
       </div>
 
-      <div className={styles.monthRow}>
-        <MonthSelector />
-      </div>
-
-      {/* Filter and Search Bar */}
       <div className={styles.filterBar}>
         <div className={styles.typeFilters}>
-          {["", "expense", "income", "investment"].map((typeKey) => {
-            const label = typeKey
-              ? typeKey === "investment"
-                ? "Investments"
-                : typeKey === "expense"
-                ? "Expenses"
-                : "Income"
-              : "All";
-            const isActive = filterType === typeKey;
+          {[
+            { key: "", label: "All", count: pagination?.total ?? (Array.isArray(transactions) ? transactions.length : 0) },
+            { key: "expense", label: "Expenses", dotClass: styles.dotExpense },
+            { key: "income", label: "Income", dotClass: styles.dotIncome },
+            { key: "investment", label: "Investments", dotClass: styles.dotInvestment },
+          ].map(({ key, label, count, dotClass }) => {
+            const isActive = filterType === key;
             return (
               <button
-                key={typeKey}
+                key={key}
                 type="button"
                 className={`${styles.filterPill} ${isActive ? styles.activeFilterPill : ""}`}
-                onClick={() => setFilterType(typeKey)}
+                onClick={() => setFilterType(key)}
               >
-                {label}
+                {dotClass && <span className={`${styles.filterDot} ${dotClass}`} />}
+                <span>{label}</span>
+                {count !== undefined && count > 0 && (
+                  <span className={styles.filterCountBadge}>{count}</span>
+                )}
               </button>
             );
           })}
@@ -117,7 +129,7 @@ const Transactions = () => {
           <Search size={15} className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Search title, category or note..."
+            placeholder="Search merchant, notes, amount..."
             className={styles.searchInput}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -137,50 +149,31 @@ const Transactions = () => {
         </div>
       ) : (
         <div className={styles.groupsContainer}>
-          {/* Today */}
-          {groups.today.length > 0 && (
-            <div className={styles.groupSection}>
+          {groups.map((group) => (
+            <div key={group.dateStr} className={styles.groupSection}>
               <div className={styles.groupHeader}>
-                <h3 className={styles.groupTitle}>Today</h3>
-                <span className={styles.groupBadge}>{groups.today.length}</span>
-              </div>
-              <div className={styles.txList}>
-                {groups.today.map(renderTxRow)}
-              </div>
-            </div>
-          )}
-
-          {/* Yesterday */}
-          {groups.yesterday.length > 0 && (
-            <div className={styles.groupSection}>
-              <div className={styles.groupHeader}>
-                <h3 className={styles.groupTitle}>Yesterday</h3>
+                <div className={styles.groupTitleWrap}>
+                  <h3 className={styles.groupTitle}>{group.title}</h3>
+                  {group.subtitle && (
+                    <span className={styles.groupSubtitle}>
+                      {group.subtitle}
+                    </span>
+                  )}
+                </div>
                 <span className={styles.groupBadge}>
-                  {groups.yesterday.length}
+                  {group.transactions.length}
                 </span>
               </div>
               <div className={styles.txList}>
-                {groups.yesterday.map(renderTxRow)}
+                {group.transactions.map(renderTxRow)}
               </div>
             </div>
-          )}
-
-          {/* Older Dates */}
-          {groups.older.length > 0 && (
-            <div className={styles.groupSection}>
-              <div className={styles.groupHeader}>
-                <h3 className={styles.groupTitle}>Older in Period</h3>
-                <span className={styles.groupBadge}>{groups.older.length}</span>
-              </div>
-              <div className={styles.txList}>
-                {groups.older.map(renderTxRow)}
-              </div>
-            </div>
-          )}
+          ))}
         </div>
       )}
 
-      {/* Backend Pagination or Search Summary */}
+
+
       {search ? (
         <div className={styles.paginationBar}>
           <span className={styles.pageInfo}>

@@ -5,7 +5,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { formatCurrency, formatDate, isEndOfMonth } from "../../utils/dateRange";
+import { formatCurrency, isEndOfMonth } from "../../utils/dateRange";
 import { getCategoryByName } from "../../config/categories";
 import CategoryPill from "./CategoryPill";
 import styles from "./TransactionItem.module.css";
@@ -41,7 +41,12 @@ const TransactionItem = ({
     : styles.expenseAmount;
 
   return (
-    <div className={`${styles.row} ${eom ? styles.monthEndRow : ""}`}>
+    <div
+      className={`${styles.row} ${eom ? styles.monthEndRow : ""}`}
+      onClick={() => onEdit && onEdit(transaction)}
+      role={onEdit ? "button" : undefined}
+      tabIndex={onEdit ? 0 : undefined}
+    >
       <div className={styles.leftGroup}>
         <div className={`${styles.iconCircle} ${iconCircleClass}`}>
           <IconComponent size={18} strokeWidth={2.2} />
@@ -58,8 +63,6 @@ const TransactionItem = ({
               label={transaction.category || transaction.type}
               variant={transaction.type}
             />
-            <span className={styles.dotSeparator}>•</span>
-            <span>{formatDate(transaction.date)}</span>
             {transaction.note && (
               <>
                 <span className={styles.dotSeparator}>•</span>

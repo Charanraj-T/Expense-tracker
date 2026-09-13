@@ -1,8 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Receipt,
+  LayoutGrid,
   BarChart3,
+  Receipt,
   Settings,
   LogOut,
   Wallet,
@@ -26,7 +26,6 @@ const Menu = () => {
   return (
     <nav className={styles.sidebar}>
       <div className={styles.topSection}>
-        {/* Brand */}
         <div className={styles.brand}>
           <div className={styles.brandLogo}>
             <Wallet size={18} strokeWidth={2.2} />
@@ -34,7 +33,6 @@ const Menu = () => {
           <span className={styles.brandName}>ClearSpend</span>
         </div>
 
-        {/* Navigation Items */}
         <ul className={styles.navLinks}>
           <li>
             <NavLink
@@ -43,19 +41,8 @@ const Menu = () => {
                 `${styles.navItem} ${isActive ? styles.activeNavItem : ""}`
               }
             >
-              <LayoutDashboard size={18} className={styles.navIcon} />
+              <LayoutGrid size={18} className={styles.navIcon} />
               <span>Dashboard</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/transactions"
-              className={({ isActive }) =>
-                `${styles.navItem} ${isActive ? styles.activeNavItem : ""}`
-              }
-            >
-              <Receipt size={18} className={styles.navIcon} />
-              <span>Transactions</span>
             </NavLink>
           </li>
           <li>
@@ -67,6 +54,17 @@ const Menu = () => {
             >
               <BarChart3 size={18} className={styles.navIcon} />
               <span>Analytics</span>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/transactions"
+              className={({ isActive }) =>
+                `${styles.navItem} ${isActive ? styles.activeNavItem : ""}`
+              }
+            >
+              <Receipt size={18} className={styles.navIcon} />
+              <span>Transactions</span>
             </NavLink>
           </li>
           <li>
@@ -83,7 +81,6 @@ const Menu = () => {
         </ul>
       </div>
 
-      {/* User Info & Logout at bottom */}
       <div className={styles.bottomSection}>
         <div className={styles.userCard}>
           <div className={styles.avatar}>{initials}</div>

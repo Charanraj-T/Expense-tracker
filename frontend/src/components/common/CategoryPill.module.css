@@ -19,7 +19,8 @@
 }
 
 .clickable:hover {
-  opacity: 0.88;
+  filter: brightness(0.95);
+  transform: translateY(-1px);
 }
 
 .pillIcon {
@@ -28,7 +29,6 @@
   justify-content: center;
 }
 
-/* Status variants */
 .income {
   background: var(--color-income-bg);
   color: var(--color-income-text);
@@ -52,4 +52,9 @@
 .selectPillActive {
   background: var(--color-primary);
   color: var(--color-on-primary);
+}
+
+.selectPillActive:hover {
+  background: var(--color-primary-hover);
+  color: #ffffff;
 }

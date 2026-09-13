@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wallet, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
@@ -11,7 +11,13 @@ const AuthPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, register } = useAuthStore();
+  const { login, register, token } = useAuthStore();
+
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,7 +45,6 @@ const AuthPage = () => {
   return (
     <div className={styles.authWrapper}>
       <div className={styles.authCard}>
-        {/* Brand Header */}
         <div className={styles.brandHeader}>
           <div className={styles.brandIcon}>
             <Wallet size={24} strokeWidth={2.2} />
@@ -48,7 +53,6 @@ const AuthPage = () => {
           <p className={styles.brandSubtitle}>Personal financial clarity without complexity</p>
         </div>
 
-        {/* Mode Segmented Toggle */}
         <div className={styles.segmentToggle}>
           <button
             type="button"

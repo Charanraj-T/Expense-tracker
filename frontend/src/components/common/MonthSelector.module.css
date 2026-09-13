@@ -1,55 +1,68 @@
-.wrapper {
+.container {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  justify-content: flex-start;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
 .monthPill {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-full);
+  padding: 0.45rem 0.95rem;
   box-shadow: var(--shadow-sm);
-  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
 }
 
-.monthInput {
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--color-text-main);
-  padding: 0;
-  cursor: pointer;
-  outline: none;
+.monthPill:hover {
+  background: var(--color-surface-dim);
+  border-color: var(--color-primary);
 }
 
 .calendarIcon {
-  font-size: 0.95rem;
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
-.cycleBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: var(--color-income-bg);
-  color: var(--color-income-text);
-  border: 1px solid rgba(0, 108, 73, 0.15);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-full);
+.monthTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition: color 0.15s ease;
 }
 
-.cycleDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-income);
+.monthPill:hover .monthTitle {
+  color: var(--color-primary);
+}
+
+.chevronIcon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.monthPill:hover .chevronIcon {
+  color: var(--color-primary);
+}
+
+.hiddenMonthInput {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  pointer-events: none;
 }
 
 .resetBtn {
@@ -58,13 +71,35 @@
   color: var(--color-primary);
   font-size: var(--font-size-xs);
   font-weight: 700;
-  padding: 0.35rem 0.75rem;
+  padding: 0.45rem 0.85rem;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
 }
 
 .resetBtn:hover {
-  background: var(--color-primary-light);
+  background: var(--color-primary);
   border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .container {
+    gap: 0.45rem;
+  }
+
+  .monthPill {
+    padding: 0.38rem 0.8rem;
+  }
+
+  .monthTitle {
+    font-size: 0.8125rem;
+  }
+
+  .resetBtn {
+    padding: 0.38rem 0.75rem;
+    font-size: 0.6875rem;
+  }
 }

@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { getCurrentMonthString, getCustomMonthRange } from "../utils/dateRange";
+import { getCurrentMonthString, getCustomMonthRange, getTodayDateString } from "../utils/dateRange";
 import {
   getTransactions,
+  getTodayTransactions,
   getTransactionSummary,
   createTransaction,
   deleteTransaction as deleteTransactionApi,
@@ -29,15 +30,14 @@ export const useTransactionStore = create((set, get) => ({
   datePreference: getStoredPreference("date_preference", "last-day"),
   currency: getStoredPreference("currency", "₹"),
 
-  // Data
-  summary: { income: 0, expense: 0, investment: 0 },
+  summary: { income: 0, expense: 0, investment: 0, dailyAverage: 0, daysInPeriod: 30 },
   transactions: [],
+  todayTransactions: [],
   chartTransactions: [],
   pagination: { page: 1, limit: 50, total: 0, pages: 1 },
-  filterType: "", // '' means all
+  filterType: "",
   search: "",
 
-  // UI state
   isAddModalOpen: false,
   loading: false,
 
@@ -51,11 +51,11 @@ export const useTransactionStore = create((set, get) => ({
     return Promise.all([
       get().fetchSummary(),
       get().fetchTransactions(),
+      get().fetchTodayTransactions(),
       get().fetchChartTransactions(),
     ]);
   },
 
-  // Month actions
   setMonth: (monthStr) => {
     set({
       currentMonth: monthStr,
@@ -68,7 +68,6 @@ export const useTransactionStore = create((set, get) => ({
     get().setMonth(getCurrentMonthString());
   },
 
-  // Preference actions
   setDatePreference: (preference) => {
     setStoredPreference("date_preference", preference);
     set({ datePreference: preference });
@@ -80,7 +79,6 @@ export const useTransactionStore = create((set, get) => ({
     set({ currency });
   },
 
-  // Filter and pagination
   setFilterType: (filterType) => {
     set({ filterType, pagination: { ...get().pagination, page: 1 } });
     get().fetchTransactions();
@@ -96,7 +94,6 @@ export const useTransactionStore = create((set, get) => ({
     get().fetchTransactions();
   },
 
-  // Modal actions
   editingTransaction: null,
   openAddModal: () =>
     set({ isAddModalOpen: true, editingTransaction: null }),
@@ -105,7 +102,6 @@ export const useTransactionStore = create((set, get) => ({
   closeAddModal: () =>
     set({ isAddModalOpen: false, editingTransaction: null }),
 
-  // Data fetching
   fetchSummary: async () => {
     try {
       const params = get().buildRangeParams();
@@ -115,10 +111,21 @@ export const useTransactionStore = create((set, get) => ({
           income: data?.income || 0,
           expense: data?.expense || 0,
           investment: data?.investment || 0,
+          dailyAverage: data?.dailyAverage || 0,
+          daysInPeriod: data?.daysInPeriod || 30,
         },
       });
     } catch (err) {
       console.error("Failed to fetch summary:", err);
+    }
+  },
+
+  fetchTodayTransactions: async () => {
+    try {
+      const data = await getTodayTransactions({ clientDate: getTodayDateString() });
+      set({ todayTransactions: data?.transactions || [] });
+    } catch (err) {
+      console.error("Failed to fetch today transactions:", err);
     }
   },
 
@@ -152,7 +159,7 @@ export const useTransactionStore = create((set, get) => ({
 
   fetchChartTransactions: async () => {
     try {
-      const params = get().buildRangeParams({ limit: 100 });
+      const params = get().buildRangeParams({ limit: 1000 });
       const data = await getTransactions(params);
       set({ chartTransactions: data?.transactions || [] });
     } catch (err) {

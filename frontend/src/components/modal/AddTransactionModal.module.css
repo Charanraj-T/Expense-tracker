@@ -87,20 +87,6 @@
   color: var(--color-text-main);
 }
 
-.successFlash {
-  margin: 0 1.5rem 0.75rem 1.5rem;
-  padding: 0.5rem 0.85rem;
-  background: var(--color-income-bg);
-  color: var(--color-income-text);
-  border: 1px solid rgba(0, 108, 73, 0.2);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .errorBanner {
   margin: 0 1.5rem 0.75rem 1.5rem;
   padding: 0.5rem 0.85rem;
@@ -119,7 +105,6 @@
   gap: 1rem;
 }
 
-/* Segmented Type Toggle */
 .typeToggle {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -145,10 +130,20 @@
   gap: 0.35rem;
 }
 
+.typeBtn:hover:not(.activeExpense):not(.activeIncome):not(.activeInvestment) {
+  color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.6);
+}
+
 .activeExpense {
   background: var(--color-surface);
   color: var(--color-expense);
   box-shadow: var(--shadow-sm);
+}
+
+.activeExpense:hover {
+  background: var(--color-surface);
+  color: var(--color-expense);
 }
 
 .activeIncome {
@@ -157,13 +152,22 @@
   box-shadow: var(--shadow-sm);
 }
 
+.activeIncome:hover {
+  background: var(--color-surface);
+  color: var(--color-income);
+}
+
 .activeInvestment {
   background: var(--color-surface);
   color: var(--color-primary);
   box-shadow: var(--shadow-sm);
 }
 
-/* Primary Amount Input Box */
+.activeInvestment:hover {
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+
 .amountContainer {
   display: flex;
   align-items: center;
@@ -230,7 +234,6 @@
   color: var(--color-text-main);
 }
 
-/* Date, Title, Category & Note Inputs */
 .inputFieldWrapper {
   display: flex;
   align-items: center;
@@ -272,9 +275,23 @@
   cursor: pointer;
   text-transform: capitalize;
   padding: 0;
+  font-family: inherit;
+  font-weight: 500;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-/* Primary Submit Button */
+.selectField option {
+  background: var(--color-surface);
+  color: var(--color-text-main);
+}
+
+.selectArrow {
+  color: var(--color-text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
 .submitBtn {
   background: var(--color-primary);
   color: var(--color-on-primary);
@@ -293,6 +310,10 @@
   margin-top: 0.25rem;
 }
 
+.dragHandle {
+  display: none;
+}
+
 .submitBtn:hover:not(:disabled) {
   background: var(--color-primary-hover);
   transform: translateY(-1px);
@@ -302,3 +323,47 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+@media (max-width: 640px) {
+  .backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 24px 24px 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 90vh;
+    animation: sheetUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    border-bottom: none;
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+  }
+
+  .dragHandle {
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border);
+    margin: 10px auto 2px auto;
+  }
+
+  @keyframes sheetUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .header {
+    padding: 0.75rem 1.25rem 0.5rem 1.25rem;
+  }
+
+  .form {
+    padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+  }
+}
+

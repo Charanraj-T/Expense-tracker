@@ -12,20 +12,6 @@
   margin-bottom: var(--space-xs);
 }
 
-.titleSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.overline {
-  font-size: var(--font-size-xs);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
-
 .pageTitle {
   font-size: 1.75rem;
   font-weight: 700;
@@ -34,7 +20,6 @@
   margin: 0;
 }
 
-/* Card base */
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -42,10 +27,14 @@
   padding: 1.5rem;
   box-shadow: var(--shadow-card);
   box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .cardHeader {
   margin-bottom: var(--space-md);
+  min-width: 0;
 }
 
 .cardTitle {
@@ -53,6 +42,9 @@
   font-weight: 700;
   color: var(--color-text-main);
   margin: 0 0 0.25rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cardDescription {
@@ -61,11 +53,11 @@
   margin: 0;
 }
 
-/* User profile */
 .profileRow {
   display: flex;
   align-items: center;
   gap: 1.25rem;
+  min-width: 0;
 }
 
 .avatar {
@@ -87,31 +79,100 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.nameBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .userName {
   font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userEmail {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .statusBadge {
-  margin-left: auto;
-  font-size: var(--font-size-xs);
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--color-income);
   background: var(--color-income-bg);
-  padding: 0.35rem 0.85rem;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(0, 108, 73, 0.15);
+  border: 1px solid rgba(0, 108, 73, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* Settings Items */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.statBox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.85rem;
+}
+
+.statIconWrap {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: #e0e7ff;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.statLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .divider {
   height: 1px;
   background: var(--color-border-subtle);
@@ -168,7 +229,6 @@
   box-shadow: var(--shadow-focus);
 }
 
-/* Radio Group */
 .radioGroup {
   display: flex;
   flex-direction: column;
@@ -233,7 +293,6 @@
   border: 1px solid var(--color-primary);
 }
 
-/* Action Rows */
 .actionRow {
   display: flex;
   gap: 0.75rem;
@@ -263,7 +322,8 @@
 
 .exportBtn:hover {
   background: var(--color-surface-dim);
-  border-color: var(--color-border-subtle);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .logoutBtn {
@@ -271,6 +331,7 @@
   border: 1px solid #fecdd3;
   color: var(--color-expense);
   gap: 0.5rem;
+  justify-content: center;
 }
 
 .logoutBtn:hover {
@@ -278,27 +339,113 @@
   border-color: var(--color-expense);
 }
 
+.sessionSection {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .topBar {
+    display: none;
+  }
+
+  .container {
+    gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .card {
+    padding: 1.15rem 1rem;
+  }
+
+  .logoutBtn {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+    background: #eef2ff;
+    color: var(--color-expense);
+    border: 1px solid #e0e7ff;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    box-shadow: none;
+  }
+
+  .logoutBtn:hover {
+    background: #e0e7ff;
+  }
+}
+
 @media (max-width: 640px) {
   .profileRow {
     flex-wrap: wrap;
+    gap: 0.85rem;
   }
 
-  .statusBadge {
-    margin-left: 0;
-    width: 100%;
-    text-align: center;
+  .statsRow {
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+  }
+
+  .statBox {
+    padding: 0.6rem 0.65rem;
+    gap: 0.5rem;
+  }
+
+  .statIconWrap {
+    width: 28px;
+    height: 28px;
+  }
+
+  .statIconWrap svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .statLabel {
+    font-size: 0.65rem;
+  }
+
+  .statValue {
+    font-size: clamp(0.72rem, 2.8vw, 0.82rem);
   }
 
   .settingItem {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.65rem;
   }
 
   .selectInput {
     width: 100%;
+    min-width: unset;
+  }
+
+  .radioLabel {
+    padding: 0.65rem 0.85rem;
+    gap: 0.65rem;
+  }
+
+  .radioTitle {
+    font-size: 0.875rem;
+  }
+
+  .radioDesc {
+    font-size: 0.72rem;
+  }
+
+  .badgeRecommended {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
   }
 
   .actionRow {
     flex-direction: column;
+  }
+
+  .exportBtn {
+    width: 100%;
+    justify-content: center;
   }
 }

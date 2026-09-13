@@ -10,25 +10,26 @@ import { formatCurrency } from "../../utils/dateRange";
 import styles from "./Charts.module.css";
 
 const PALETTE = [
-  "#4648d4", // Royal Indigo (Primary)
-  "#dc2c4f", // Rose Red (Tertiary)
-  "#006c49", // Emerald Green (Secondary)
-  "#f59e0b", // Amber
-  "#8b5cf6", // Purple
-  "#06b6d4", // Cyan
-  "#f97316", // Orange
-  "#64748b", // Slate
+  "#4648d4",
+  "#dc2c4f",
+  "#006c49",
+  "#f59e0b",
+  "#8b5cf6",
+  "#06b6d4",
+  "#f97316",
+  "#64748b",
 ];
 
 const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
   const { categoryData, totalExpense, highestCategory } = useMemo(() => {
-    const expenseTxs = transactions.filter((t) => t.type === "expense");
+    const list = Array.isArray(transactions) ? transactions : [];
+    const expenseTxs = list.filter((t) => t && t.type === "expense");
     const map = {};
     let total = 0;
 
     expenseTxs.forEach((t) => {
-      const cat = (t.category || "other").toLowerCase();
-      const amt = Number(t.amount) || 0;
+      const cat = (t?.category || "other").toLowerCase();
+      const amt = Number(t?.amount) || 0;
       map[cat] = (map[cat] || 0) + amt;
       total += amt;
     });
@@ -49,7 +50,7 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
     };
   }, [transactions]);
 
-  if (!transactions.length || totalExpense === 0) {
+  if (!Array.isArray(transactions) || !transactions.length || totalExpense === 0) {
     return (
       <div className={styles.chartCard}>
         <div className={styles.chartHeader}>
@@ -88,6 +89,7 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
                   outerRadius="80%"
                   paddingAngle={2}
                   stroke="none"
+                  isAnimationActive={false}
                 >
                   {categoryData.map((item) => (
                     <Cell key={item.name} fill={item.color} />
@@ -108,22 +110,23 @@ const CategoryPieChart = ({ transactions = [], currency = "₹" }) => {
               </PieChart>
             </ResponsiveContainer>
             <div className={styles.donutCenter}>
-              <div className={styles.donutCenterLabel}>TOTAL OUT</div>
+              <div className={styles.donutCenterLabel}>Top Spent</div>
               <div className={styles.donutCenterValue}>
-                {formatCurrency(totalExpense, currency)}
+                {highestCategory || "None"}
               </div>
             </div>
           </div>
 
           <div className={styles.legendList}>
-            {categoryData.slice(0, 5).map((item) => (
+            {categoryData.slice(0, 6).map((item) => (
               <div key={item.name} className={styles.legendItem}>
                 <div className={styles.legendDotLabel}>
                   <span className={styles.dot} style={{ background: item.color }} />
-                  <span>{item.name}</span>
+                  <span className={styles.catLabelText}>{item.name}</span>
                 </div>
                 <span className={styles.legendFigures}>
-                  {item.percentage.toFixed(0)}% ({formatCurrency(item.value, currency)})
+                  {item.percentage.toFixed(0)}%
+                  <span className={styles.legendAmount}> ({formatCurrency(item.value, currency)})</span>
                 </span>
               </div>
             ))}

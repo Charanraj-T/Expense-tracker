@@ -11,18 +11,12 @@ import {
   Type,
   FileText,
   Check,
+  ChevronDown,
 } from "lucide-react";
 import { useTransactionStore } from "../../store/transactionStore";
 import { getCategoriesForType } from "../../config/categories";
+import { getTodayDateString } from "../../utils/dateRange";
 import styles from "./AddTransactionModal.module.css";
-
-const getTodayDateString = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
 
 const AddTransactionModal = () => {
   const {
@@ -44,7 +38,6 @@ const AddTransactionModal = () => {
   const [note, setNote] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
 
   const isEditing = Boolean(editingTransaction);
@@ -58,21 +51,9 @@ const AddTransactionModal = () => {
     return base;
   }, [type, editingTransaction]);
 
-  // Preselect first category and auto-focus amount when modal opens
   useEffect(() => {
-    if (isAddModalOpen) {
-      setTimeout(() => {
-        amountRef.current?.focus();
-      }, 50);
-      setFeedback("");
-      setError("");
-      setCategory(getCategoriesForType("expense")[0].name);
-    }
-  }, [isAddModalOpen]);
-
-  // Prefill fields when editing an existing transaction
-  useEffect(() => {
-    if (isAddModalOpen && editingTransaction) {
+    if (!isAddModalOpen) return;
+    if (editingTransaction) {
       const tx = editingTransaction;
       setTitle(tx.title || "");
       setAmount(String(tx.amount ?? ""));
@@ -84,12 +65,18 @@ const AddTransactionModal = () => {
           : getTodayDateString(),
       );
       setNote(tx.note || "");
-      setFeedback("");
-      setError("");
+    } else {
+      setTitle("");
+      setAmount("");
+      setType("expense");
+      setCategory(getCategoriesForType("expense")[0].name);
+      setDate(getTodayDateString());
+      setNote("");
     }
+    setError("");
+    amountRef.current?.focus();
   }, [isAddModalOpen, editingTransaction]);
 
-  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape" && isAddModalOpen) {
@@ -108,13 +95,11 @@ const AddTransactionModal = () => {
     if (!list.some((c) => c.name === category)) {
       setCategory(list[0]?.name || "");
     }
-    if (feedback) setFeedback("");
     if (error) setError("");
   };
 
   const handleFieldChange = (setter) => (e) => {
     setter(e.target.value);
-    if (feedback) setFeedback("");
     if (error) setError("");
   };
 
@@ -126,24 +111,20 @@ const AddTransactionModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setFeedback("");
 
-    const parsedTitle = title.trim();
-    if (!parsedTitle) {
-      setError("Please enter a title");
+    const finalCategory = category.trim().toLowerCase();
+    if (!finalCategory) {
+      setError("Please select a category");
       return;
     }
+
+    const selectedCatObj = categoryOptions.find((c) => c.name === finalCategory);
+    const parsedTitle = title.trim() || selectedCatObj?.label || "Transaction";
 
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) {
       setError("Please enter a valid amount greater than 0");
       amountRef.current?.focus();
-      return;
-    }
-
-    const finalCategory = category.trim().toLowerCase();
-    if (!finalCategory) {
-      setError("Please select a category");
       return;
     }
 
@@ -164,20 +145,7 @@ const AddTransactionModal = () => {
       }
 
       await addTransaction(payload);
-
-      // Clear fields as required, keep category selected for repeat entry
-      setAmount("");
-      setTitle("");
-      setNote("");
-
-      setFeedback(
-        `Added ${currency} ${numAmount} (${finalCategory})! Ready for next.`,
-      );
-
-      // Keep modal open, refocus Amount
-      setTimeout(() => {
-        amountRef.current?.focus();
-      }, 50);
+      closeAddModal();
     } catch (err) {
       setError(
         err?.response?.data?.message ||
@@ -192,6 +160,7 @@ const AddTransactionModal = () => {
   return (
     <div className={styles.backdrop} onClick={closeAddModal}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.dragHandle} />
         <div className={styles.header}>
           <div className={styles.headerTitleGroup}>
             <div className={styles.lightningIcon}>
@@ -211,12 +180,6 @@ const AddTransactionModal = () => {
           </button>
         </div>
 
-        {feedback && (
-          <div className={styles.successFlash}>
-            <span>{feedback}</span>
-          </div>
-        )}
-
         {error && (
           <div className={styles.errorBanner}>
             <span>{error}</span>
@@ -224,7 +187,6 @@ const AddTransactionModal = () => {
         )}
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {/* 1. Type Selector (Segmented Toggle) */}
           <div className={styles.typeToggle}>
             <button
               type="button"
@@ -249,7 +211,6 @@ const AddTransactionModal = () => {
             </button>
           </div>
 
-          {/* 2. Amount Input Box (Primary Focus) */}
           <div className={styles.amountContainer}>
             <div className={styles.amountInputGroup}>
               <span className={styles.amountPrefix}>{currency}</span>
@@ -263,7 +224,6 @@ const AddTransactionModal = () => {
                 value={amount}
                 onChange={handleFieldChange(setAmount)}
                 required
-                autoFocus
               />
             </div>
             {amount && (
@@ -278,20 +238,17 @@ const AddTransactionModal = () => {
             )}
           </div>
 
-          {/* 3. Title Input */}
           <div className={styles.inputFieldWrapper}>
             <Type size={16} className={styles.inputIcon} />
             <input
               type="text"
-              placeholder="Title (e.g. Lunch at Cafe)"
+              placeholder="Title (e.g. Lunch at Cafe, or leave blank)"
               className={styles.inputField}
               value={title}
               onChange={handleFieldChange(setTitle)}
-              required
             />
           </div>
 
-          {/* 4. Category Dropdown */}
           <div className={styles.inputFieldWrapper}>
             <Tag size={16} className={styles.inputIcon} />
             <select
@@ -306,9 +263,9 @@ const AddTransactionModal = () => {
                 </option>
               ))}
             </select>
+            <ChevronDown size={14} className={styles.selectArrow} />
           </div>
 
-          {/* 5. Date Picker Input */}
           <div className={styles.inputFieldWrapper}>
             <Calendar size={16} className={styles.inputIcon} />
             <input
@@ -320,7 +277,6 @@ const AddTransactionModal = () => {
             />
           </div>
 
-          {/* 6. Note Input */}
           <div className={styles.inputFieldWrapper}>
             <FileText size={16} className={styles.inputIcon} />
             <input
@@ -332,18 +288,17 @@ const AddTransactionModal = () => {
             />
           </div>
 
-          {/* 7. Save Button */}
           <button
             type="submit"
             className={styles.submitBtn}
             disabled={loading}
           >
-            <Check size={16} />
+            <Check size={16} strokeWidth={2.5} />
             <span>
               {loading
                 ? "Saving..."
                 : isEditing
-                  ? "Update"
+                  ? "Update Transaction"
                   : `Save ${type.charAt(0).toUpperCase() + type.slice(1)}`}
             </span>
           </button>

@@ -54,7 +54,6 @@
   margin: 0;
 }
 
-/* Segmented Toggle */
 .segmentToggle {
   display: flex;
   background: var(--color-surface-container);
@@ -161,6 +160,10 @@
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(70, 72, 212, 0.25);
   transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .submitBtn:hover:not(:disabled) {
@@ -171,4 +174,15 @@
 .submitBtn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .authWrapper {
+    padding: 1rem;
+  }
+
+  .authCard {
+    padding: 2rem 1.25rem;
+    border-radius: var(--radius-lg);
+  }
 }

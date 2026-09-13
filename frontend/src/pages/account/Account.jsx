@@ -1,11 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { Download, LogOut } from "lucide-react";
+import { Download, LogOut, Wallet, ReceiptText } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useTransactionStore } from "../../store/transactionStore";
-import {
-  downloadBlob,
-  exportTransactionsToCsv,
-} from "../../utils/exportCsv";
+import { formatCurrency } from "../../utils/dateRange";
+import { downloadBlob } from "../../utils/exportCsv";
+import { getErrorMessage } from "../../api/axios";
 import { exportTransactionsCsv } from "../../services/transactionService";
 import styles from "./Account.module.css";
 
@@ -18,7 +17,8 @@ const Account = () => {
     datePreference,
     setDatePreference,
     currentMonth,
-    transactions,
+    summary,
+    pagination,
     buildRangeParams,
   } = useTransactionStore();
 
@@ -31,8 +31,8 @@ const Account = () => {
     try {
       const blob = await exportTransactionsCsv(buildRangeParams());
       downloadBlob(blob, `transactions_${currentMonth}.csv`);
-    } catch {
-      exportTransactionsToCsv(transactions, `transactions_${currentMonth}.csv`);
+    } catch (err) {
+      alert(getErrorMessage(err));
     }
   };
 
@@ -40,37 +40,60 @@ const Account = () => {
     try {
       const blob = await exportTransactionsCsv({});
       downloadBlob(blob, "all_transactions.csv");
-    } catch {
-      exportTransactionsToCsv(transactions, "transactions_export.csv");
+    } catch (err) {
+      alert(getErrorMessage(err));
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.topBar}>
-        <div className={styles.titleSection}>
-          <span className={styles.overline}>PREFERENCES & PROFILE</span>
-          <h1 className={styles.pageTitle}>Account Settings</h1>
-        </div>
+        <h1 className={styles.pageTitle}>Account Settings</h1>
       </div>
 
-      {/* Profile Card */}
       <div className={styles.card}>
         <div className={styles.profileRow}>
           <div className={styles.avatar}>
             {(user?.username || user?.userId || "U").charAt(0).toUpperCase()}
           </div>
           <div className={styles.profileMeta}>
-            <div className={styles.userName}>{user?.username || "Account"}</div>
+            <div className={styles.nameBadgeRow}>
+              <div className={styles.userName}>{user?.username || "Account"}</div>
+              <span className={styles.statusBadge}>Active</span>
+            </div>
             {user?.email && (
               <div className={styles.userEmail}>{user.email}</div>
             )}
           </div>
-          <div className={styles.statusBadge}>Active Workspace</div>
+        </div>
+
+        <div className={styles.statsRow}>
+          <div className={styles.statBox}>
+            <div className={styles.statIconWrap}>
+              <Wallet size={16} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Tracked</span>
+              <span className={styles.statValue}>
+                {formatCurrency(summary.expense, currency)} this month
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.statBox}>
+            <div className={styles.statIconWrap}>
+              <ReceiptText size={16} />
+            </div>
+            <div className={styles.statInfo}>
+              <span className={styles.statLabel}>Logged</span>
+              <span className={styles.statValue}>
+                {pagination?.total ?? transactions.length} entries
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Preferences Card */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Application Preferences</h2>
@@ -79,14 +102,13 @@ const Account = () => {
           </p>
         </div>
 
-        {/* Currency Selector */}
         <div className={styles.settingItem}>
           <div className={styles.settingText}>
             <label className={styles.settingLabel} htmlFor="currencySelect">
               Base Currency
             </label>
             <span className={styles.settingDescription}>
-              Symbol used to display all monetary figures across dashboard and analytics
+              Symbol used to display all monetary figures across the application
             </span>
           </div>
           <select
@@ -104,7 +126,6 @@ const Account = () => {
 
         <div className={styles.divider} />
 
-        {/* Month Date Cycle */}
         <div className={styles.settingItemColumn}>
           <div className={styles.settingText}>
             <span className={styles.settingLabel}>Month Date Cycle</span>
@@ -156,7 +177,6 @@ const Account = () => {
         </div>
       </div>
 
-      {/* Data Export Card */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Data Export & Backup</h2>
@@ -185,22 +205,14 @@ const Account = () => {
         </div>
       </div>
 
-      {/* Session Card */}
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>Session</h2>
-          <p className={styles.cardDescription}>
-            Sign out of your account on this device.
-          </p>
-        </div>
-
+      <div className={styles.sessionSection}>
         <button
           type="button"
           className={styles.logoutBtn}
           onClick={handleLogout}
         >
           <LogOut size={16} />
-          Sign Out
+          Log Out
         </button>
       </div>
     </div>
